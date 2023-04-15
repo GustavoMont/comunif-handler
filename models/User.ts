@@ -1,9 +1,12 @@
 export interface User {
-  id: number;
-  name: string;
-  lastName: string;
+  avatar: null;
+  bio: null;
   email: string;
+  id: number;
+  lastName: string;
+  name: string;
   username: string;
+  role: RoleEnum;
 }
 
 export enum RoleEnum {

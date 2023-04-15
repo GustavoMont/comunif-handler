@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { PasswordField } from "@/components/Form/PasswordField";
 import {
   Box,
@@ -15,8 +15,9 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/context/AuthContext";
+import { NextPageWithLayout } from "./_app";
 
-export default function Login() {
+const Login: NextPageWithLayout = () => {
   interface LoginPayload {
     username: string;
     password: string;
@@ -87,4 +88,10 @@ export default function Login() {
       </form>
     </Container>
   );
-}
+};
+
+Login.getLayout = (page: ReactElement) => {
+  return <>{page}</>;
+};
+
+export default Login;

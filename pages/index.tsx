@@ -1,11 +1,14 @@
+import { useAuth } from "@/context/AuthContext";
 import { authCookieKey } from "@/utils/auth";
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 
 export default function Home() {
+  const { user } = useAuth();
+
   return (
     <>
-      <h1>Olá mundo</h1>
+      <h1>Olá, {user?.name}</h1>
     </>
   );
 }
