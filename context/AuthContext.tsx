@@ -37,17 +37,24 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
   };
 
   const getUser = async (id: number): Promise<User> => {
-    const { data: user } = await api.get<User>(`/users/${id}`);
-    return user;
+    try {
+      const { data: user } = await api.get<User>(`/users/${id}`);
+      return user;
+    } catch (error) {
+      destroyCookie(null, authCookieKey);
+      throw new Error("User does not exists");
+    }
   };
 
   const setUserByToken = useCallback(async (token: string) => {
-    const { sub: id, roles } = decodeToken(token);
-    if (!roles.includes(RoleEnum.admin)) {
-      throw new Error("Voce não tem permissão para acessar essa plataforma");
-    }
-    storeAccess(token);
-    setUser(await getUser(id));
+    try {
+      const { sub: id, roles } = decodeToken(token);
+      if (!roles.includes(RoleEnum.admin)) {
+        throw new Error("Voce não tem permissão para acessar essa plataforma");
+      }
+      storeAccess(token);
+      setUser(await getUser(id));
+    } catch (error) {}
   }, []);
 
   const decodeToken = (token: string) =>
@@ -58,26 +65,17 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
       data: { access },
     } = await api.post<AuthCookie>("/auth/login", data);
     await setUserByToken(access);
+    Router.push("/");
   };
 
   useEffect(() => {
     const token = getToken();
-    if (token) {
+    if (!token) {
+      Router.push("/login");
+    } else if (!user) {
       setUserByToken(token);
     }
-  }, [setUserByToken]);
-
-  useEffect(() => {
-    let mounted = true;
-
-    if (mounted && !!user) {
-      Router.push("/");
-    }
-
-    return () => {
-      mounted = false;
-    };
-  }, [user]);
+  }, [setUserByToken, user]);
 
   return (
     <AuthContext.Provider

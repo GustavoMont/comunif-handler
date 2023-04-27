@@ -25,10 +25,9 @@ const Login: NextPageWithLayout = () => {
   const { handleSubmit, register } = useForm<LoginPayload>();
   const toast = useToast();
   const { login } = useAuth();
+
   const onSubmit = async (data: LoginPayload) => {
     try {
-      console.log(login);
-
       await login(data);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

@@ -1,3 +1,4 @@
+import { ctxType } from "@/types/ctx";
 import { getToken } from "@/utils/auth";
 import axios from "axios";
 
@@ -8,6 +9,13 @@ const baseURL = `${url}/api`;
 export const api = axios.create({
   baseURL,
 });
+
+export const serverSideAPi = (ctx: ctxType) => {
+  const token = getToken(ctx);
+  api.defaults.headers["Authorization"] = `Bearer ${token}`;
+
+  return api;
+};
 
 api.interceptors.request.use(
   (config) => {

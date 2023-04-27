@@ -25,25 +25,24 @@ import {
 import {
   FiHome,
   FiTrendingUp,
-  FiCompass,
-  FiStar,
-  FiSettings,
   FiMenu,
   FiBell,
   FiChevronDown,
 } from "react-icons/fi";
 import { IconType } from "react-icons";
 import { useAuth } from "@/context/AuthContext";
-import { HiUserGroup } from "react-icons/hi";
+import NextLink from "next/link";
+import { useRouter } from "next/router";
 
 interface LinkItemProps {
   name: string;
   icon: IconType;
+  href: string;
 }
 const LinkItems: Array<LinkItemProps> = [
-  { name: "Home", icon: FiHome },
-  { name: "Comunidades", icon: FiTrendingUp },
-  { name: "Usuários", icon: HiUserGroup },
+  { name: "Home", icon: FiHome, href: "/" },
+  { name: "Comunidades", icon: FiTrendingUp, href: "/comunidades" },
+  // { name: "Usuários", icon: HiUserGroup },
 ];
 
 export default function Sidebar({ children }: { children: ReactNode }) {
@@ -80,6 +79,14 @@ interface SidebarProps extends BoxProps {
 }
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+  const { pathname } = useRouter();
+
+  const handleActiveLink = (href: string, pathname: string): boolean => {
+    const separator = pathname.split("/");
+    const rootUrl = "/" + separator[1];
+    return href === "/" ? rootUrl === href : rootUrl.includes(href);
+  };
+
   return (
     <Box
       transition="3s ease"
@@ -97,11 +104,17 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         </Text>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
-      {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon}>
-          {link.name}
-        </NavItem>
-      ))}
+      <VStack alignItems={"stretch"}>
+        {LinkItems.map(({ href, icon, name }) => (
+          <NavItem
+            active={handleActiveLink(href, pathname)}
+            key={name}
+            {...{ icon, href }}
+          >
+            {name}
+          </NavItem>
+        ))}
+      </VStack>
     </Box>
   );
 };
@@ -109,11 +122,18 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 interface NavItemProps extends FlexProps {
   icon: IconType;
   children: ReactNode;
+  href?: string;
+  active: boolean;
 }
-const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
+const NavItem = ({ icon, children, href, active, ...rest }: NavItemProps) => {
+  const selectedStyle = {
+    bg: "primary",
+    color: "white",
+  };
   return (
     <Link
-      href="#"
+      href={href}
+      as={NextLink}
       style={{ textDecoration: "none" }}
       _focus={{ boxShadow: "none" }}
     >
@@ -124,10 +144,8 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
         borderRadius="lg"
         role="group"
         cursor="pointer"
-        _hover={{
-          bg: "primary",
-          color: "white",
-        }}
+        _hover={selectedStyle}
+        {...(active ? selectedStyle : {})}
         {...rest}
       >
         {icon && (
@@ -151,8 +169,6 @@ interface MobileProps extends FlexProps {
 }
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
   const { user } = useAuth();
-  console.log(user);
-
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
