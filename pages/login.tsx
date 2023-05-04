@@ -79,7 +79,7 @@ const Login: NextPageWithLayout = () => {
             </Stack>
           </Box>
           <Stack spacing="6">
-            <Button type="submit" variant="solid" backgroundColor={"primary"}>
+            <Button type="submit" variant="solid" colorScheme="primary">
               Sign in
             </Button>
           </Stack>

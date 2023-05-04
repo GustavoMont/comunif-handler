@@ -127,7 +127,7 @@ interface NavItemProps extends FlexProps {
 }
 const NavItem = ({ icon, children, href, active, ...rest }: NavItemProps) => {
   const selectedStyle = {
-    bg: "primary",
+    bg: "primary.500",
     color: "white",
   };
   return (

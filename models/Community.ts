@@ -5,3 +5,9 @@ export interface Community {
   banner: string | null;
   isActive: boolean;
 }
+
+export interface UpdateCommunity {
+  name?: string;
+  isActive?: boolean;
+  banner: string | FileList | null;
+}

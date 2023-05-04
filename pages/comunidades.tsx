@@ -35,15 +35,23 @@ const Comunidades: NextPage<Props> = ({ communities }) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { data: communities } = await serverSideAPi(ctx).get<Community[]>(
-    "/communities"
-  );
+  try {
+    const { data: communities } = await serverSideAPi(ctx).get<Community[]>(
+      "/communities"
+    );
 
-  return {
-    props: {
-      communities,
-    } as Props,
-  };
+    return {
+      props: {
+        communities,
+      } as Props,
+    };
+  } catch (error) {
+    return {
+      props: {
+        communities: [],
+      } as Props,
+    };
+  }
 };
 
 export default Comunidades;
