@@ -1,5 +1,6 @@
-import api, { url } from "@/config/api";
+import { url } from "@/config/api";
 import { Community, UpdateCommunity } from "@/models/Community";
+import { updateCommunity } from "@/utils/api/community-requests";
 import {
   Box,
   Button,
@@ -37,6 +38,10 @@ const ActiveTag: React.FC<TagProps> = ({ isActive }) => (
 );
 
 const CommunityCard: React.FC<PropsWithChildren<Props>> = ({ community }) => {
+  const [imageTimeStamp, setImageTimeStamp] = useState<number>(
+    new Date().getTime()
+  );
+  const generateNewTimeStamp = () => setImageTimeStamp(new Date().getTime());
   const { banner, name, isActive, id } = community;
   const [isEditing, setIsEditing] = useState(false);
   const { register, handleSubmit } = useForm<UpdateCommunity>({
@@ -46,30 +51,38 @@ const CommunityCard: React.FC<PropsWithChildren<Props>> = ({ community }) => {
       banner,
     },
   });
+
+  const handleFormData = (
+    key: string,
+    formData: UpdateCommunity,
+    form: FormData
+  ) => {
+    const formKey: keyof UpdateCommunity = key as keyof UpdateCommunity;
+    if (formKey !== "banner") {
+      form.set(key, String(formData[formKey]));
+    }
+  };
   const queryClient = useQueryClient();
   const onSubmit = async (formData: UpdateCommunity) => {
     const multipartForm = new FormData();
-    Object.keys(formData).forEach((key) => {
-      const formKey: keyof UpdateCommunity = key as keyof UpdateCommunity;
-      if (formKey !== "banner") {
-        multipartForm.set(key, String(formData[formKey]));
-      }
-    });
+    Object.keys(formData).forEach((key) =>
+      handleFormData(key, formData, multipartForm)
+    );
     if (typeof formData.banner !== "string") {
       const banner = formData.banner?.item(0);
       banner && multipartForm.set("banner", banner);
     }
-    await api.patch<UpdateCommunity>(`communities/${id}`, multipartForm, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Accept: "application/json",
-      },
-    });
+    await updateCommunity(id, multipartForm);
     queryClient.invalidateQueries(["communities"]);
-    disableEditMode();
   };
-  const { isLoading, mutate } = useMutation(handleSubmit(onSubmit));
-  const timeStamp = new Date().getTime();
+  const { isLoading, mutate } = useMutation(handleSubmit(onSubmit), {
+    onSuccess() {
+      queryClient.invalidateQueries();
+      generateNewTimeStamp();
+      disableEditMode();
+    },
+  });
+
   const bannerUrl = !!banner && `${url}/${banner}`;
   const changeEditMode = (value: boolean | "toggle") =>
     setIsEditing((prev) => (value === "toggle" ? !prev : value));
@@ -128,9 +141,8 @@ const CommunityCard: React.FC<PropsWithChildren<Props>> = ({ community }) => {
             </Stack>
             <Box w={"full"} h={{ sm: "280px", lg: "150px" }}>
               <Image
-                src={`${bannerUrl}/?${timeStamp}` || ""}
+                src={`${bannerUrl}/?${imageTimeStamp}` || ""}
                 alt="Green double couch with wooden legs"
-                fallbackSrc="https://via.placeholder.com/280x200"
                 marginInline={"auto"}
                 h={"inherit"}
                 boxSize={"full"}
@@ -181,39 +193,6 @@ const CommunityCard: React.FC<PropsWithChildren<Props>> = ({ community }) => {
       </Card>
     </Skeleton>
   );
-
-  // return (
-  //   <Card maxW="md">
-  //     <CardBody>
-  //       <Image
-  //         src={banner || "https://placehold.co/600x400"}
-  //         alt="Green double couch with wooden legs"
-  //         borderRadius="lg"
-  //       />
-  //       <Stack mt="6" spacing="6">
-  //         <HStack justifyContent={"space-between"}>
-  //           <Heading size="md">{name}</Heading>
-  //           <ActiveTag isActive={isActive} />
-  //         </HStack>
-  //         {children}
-  //         <HStack justifyContent={"end"} spacing={5}>
-  //           {isEditMode && (
-  //             <Button
-  //               onClick={() => changeEditMode(false)}
-  //               colorScheme="blackAlpha"
-  //             >
-  //               Cancelar
-  //             </Button>
-  //           )}
-  //           <Button onClick={() => changeEditMode("toggle")} colorScheme="blue">
-  //             {isEditMode ? "Confirmar" : "Editar"}
-  //           </Button>
-  //         </HStack>
-  //       </Stack>
-  //     </CardBody>
-  //     <Divider />
-  //   </Card>
-  // );
 };
 
 export default CommunityCard;
