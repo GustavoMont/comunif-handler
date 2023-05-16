@@ -11,3 +11,9 @@ export interface UpdateCommunity {
   isActive?: boolean;
   banner: string | FileList | null;
 }
+
+export interface CreateCommunity {
+  banner: FileList;
+  name: string;
+  subject: string;
+}

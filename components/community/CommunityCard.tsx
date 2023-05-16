@@ -1,6 +1,6 @@
 import { url } from "@/config/api";
 import { Community, UpdateCommunity } from "@/models/Community";
-import { updateCommunity } from "@/utils/api/community-requests";
+import { updateCommunity } from "@/services/community-requests";
 import {
   Box,
   Button,
@@ -141,8 +141,9 @@ const CommunityCard: React.FC<PropsWithChildren<Props>> = ({ community }) => {
             </Stack>
             <Box w={"full"} h={{ sm: "280px", lg: "150px" }}>
               <Image
-                src={`${bannerUrl}/?${imageTimeStamp}` || ""}
-                alt="Green double couch with wooden legs"
+                src={bannerUrl ? `${bannerUrl}/?${imageTimeStamp}` : ""}
+                alt={`Comunidade ${name}`}
+                fallbackSrc="https://via.placeholder.com/150"
                 marginInline={"auto"}
                 h={"inherit"}
                 boxSize={"full"}

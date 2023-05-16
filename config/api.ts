@@ -4,7 +4,7 @@ import axios from "axios";
 
 export const url = process.env.NEXT_PUBLIC_API_URL;
 
-const baseURL = `${url}/api`;
+const baseURL = `${url}/api/`;
 
 export const api = axios.create({
   baseURL,

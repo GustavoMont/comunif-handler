@@ -43,7 +43,7 @@ export const listCommunities: listCommunities = async (filters, ctx = null) => {
 type updateCommunity = (id: number, body: FormData) => Promise<Community>;
 export const updateCommunity: updateCommunity = async (id, body) => {
   const { data: community } = await api.patch<Community>(
-    `communities/${id}`,
+    `/communities/${id}`,
     body,
     {
       headers: {
@@ -53,4 +53,15 @@ export const updateCommunity: updateCommunity = async (id, body) => {
     }
   );
   return community;
+};
+
+type createCommunity = (body: FormData) => Promise<void>;
+
+export const createCommunity: createCommunity = async (body) => {
+  await api.post<Community>(`/communities`, body, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Accept: "application/json",
+    },
+  });
 };
