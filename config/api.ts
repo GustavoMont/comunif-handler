@@ -1,6 +1,13 @@
+import { validateRefreshToken } from "@/services/auth-requests";
 import { ctxType } from "@/types/ctx";
-import { getToken } from "@/utils/auth";
-import axios from "axios";
+import {
+  deleteTokens,
+  getRefreshToken,
+  getToken,
+  storeTokens,
+} from "@/utils/auth";
+import axios, { AxiosError } from "axios";
+import Router from "next/router";
 
 const url = process.env.NEXT_PUBLIC_API_URL;
 
@@ -29,5 +36,21 @@ api.interceptors.request.use(
     Promise.reject(error);
   }
 );
+
+const onRequestFail = async (err: AxiosError) => {
+  if (err.response?.status === 401) {
+    try {
+      const refreshToken = getRefreshToken();
+      const credentials = await validateRefreshToken(refreshToken ?? "");
+      storeTokens(credentials);
+    } catch (error) {
+      deleteTokens();
+      Router.push("/login");
+    }
+  }
+  return Promise.reject(err);
+};
+
+api.interceptors.response.use((config) => config, onRequestFail);
 
 export default api;
