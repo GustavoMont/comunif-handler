@@ -10,7 +10,7 @@ import {
   useToken,
 } from "@chakra-ui/react";
 import React from "react";
-import { HiPaperAirplane, HiLogin } from "react-icons/hi";
+import { HiPaperAirplane, HiXCircle } from "react-icons/hi";
 import { Message } from "./Message";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/context/AuthContext";
@@ -52,6 +52,7 @@ export const Chat: React.FC<Props> = ({
       h={"full"}
       borderRadius={"2xl"}
       overflow={"hidden"}
+      bg={"white"}
     >
       <HStack p={"5"} w={"full"} bg={"primary.700"}>
         <IconButton
@@ -59,7 +60,7 @@ export const Chat: React.FC<Props> = ({
           colorScheme="secondary"
           bg={"transparent"}
           aria-label="Sair do chat"
-          icon={<HiLogin color={white} size={"20"} />}
+          icon={<HiXCircle color={white} size={"20"} />}
         />
         <Text color={"white"}>{chatName}</Text>
       </HStack>

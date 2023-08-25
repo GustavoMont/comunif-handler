@@ -67,7 +67,7 @@ export default function Sidebar({ children }: { children: ReactNode }) {
         </DrawerContent>
       </Drawer>
       <MobileNav onOpen={onOpen} />
-      <Box ml={{ base: 0, md: 60 }} p="4">
+      <Box position={"relative"} ml={{ base: 0, md: 60 }} p="4">
         {children}
       </Box>
     </Box>

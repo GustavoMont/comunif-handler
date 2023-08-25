@@ -1,5 +1,5 @@
 import { Chat } from "@/components/chat/Chat";
-import { LinksList } from "@/components/common/LinksList";
+import { CommunityInfo } from "@/components/management/CommunityInfo";
 import { socket } from "@/config/socket";
 import { CommunityChannel } from "@/models/CommunityChannel";
 import { SendMessagePayload } from "@/models/Form/Chat/SendMessage";
@@ -10,14 +10,10 @@ import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
-  Divider,
-  HStack,
-  Heading,
-  Image,
-  ScaleFade,
+  Flex,
   SlideFade,
-  Text,
   VStack,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import {
   DehydratedState,
@@ -26,6 +22,7 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { GetServerSideProps, NextPage } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
@@ -35,6 +32,7 @@ interface Props {
 
 const Comunidade: NextPage<Props> = () => {
   const router = useRouter();
+  const [isLargerThan1280] = useMediaQuery("(min-width: 1160px)");
   const [selectedChannel, setSelectedChannel] =
     useState<CommunityChannel | null>(null);
   const showChat = !!selectedChannel;
@@ -43,15 +41,6 @@ const Comunidade: NextPage<Props> = () => {
   const { data: community } = useQuery(["community", communityId], () =>
     getCommunity(Number(communityId))
   );
-
-  const connectChannel = (channel: CommunityChannel) => {
-    socket.connect();
-    setSelectedChannel(channel);
-    const payload = { communityChannelId: channel.id };
-    socket.emit("join-channel", payload, (messages: Message[]) => {
-      setMessages(messages);
-    });
-  };
 
   useEffect(() => {
     const onMessage = (message: Message) => {
@@ -65,67 +54,51 @@ const Comunidade: NextPage<Props> = () => {
   const onSendMessage = (message: SendMessagePayload) => {
     socket.emit("message-channel", message);
   };
-  const channels = community?.communityChannels;
-  const channelsLength = channels?.length;
 
   return (
     <Box as="main" h={"80vh"}>
       <VStack spacing={5} align={"start"} h={"full"}>
         <Breadcrumb separator={">"} color="secondary.200">
           <BreadcrumbItem>
-            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            <Link passHref href="/">
+              <BreadcrumbLink as={"p"}>Home</BreadcrumbLink>
+            </Link>
           </BreadcrumbItem>
 
           <BreadcrumbItem>
-            <BreadcrumbLink href="/comunidades">Comunidades</BreadcrumbLink>
+            <Link passHref href="/comunidades">
+              <BreadcrumbLink as={"p"}>Comunidades</BreadcrumbLink>
+            </Link>
           </BreadcrumbItem>
 
           <BreadcrumbItem color={"secondary.500"} isCurrentPage>
-            <BreadcrumbLink href={"#"}>{community?.name}</BreadcrumbLink>
+            <Link passHref href="">
+              <BreadcrumbLink as={"p"}>{community?.name}</BreadcrumbLink>
+            </Link>
           </BreadcrumbItem>
         </Breadcrumb>
-        <HStack w={"full"} alignItems={"start"} h={"full"} spacing={5}>
-          <Box>
-            <Image
-              alignSelf={"flex-start"}
-              src={community?.banner ?? ""}
-              alt={`Comunidade ${community?.name}`}
-              fallbackSrc="https://via.placeholder.com/150"
-              boxSize={"sm"}
-              objectFit={"contain"}
-              borderRadius="lg"
-            />
-          </Box>
-          <VStack flex={1} alignItems={"start"}>
-            <Heading as={"h2"} color={"primary.500"}>
-              {community?.name}
-            </Heading>
-            <Divider borderColor={"primary.300"} />
-            <VStack alignItems={"start"}>
-              <Heading as={"h4"} fontSize={"lg"} color={"secondary.400"}>
-                Canais de comunicação
-              </Heading>
-              {channels && (
-                <LinksList
-                  name={"name"}
-                  keyName="id"
-                  source={channels.map(({ channelType }) => channelType)}
-                  hrefs={channels.map((channel) => ({
-                    onClick() {
-                      connectChannel(channel);
-                    },
-                  }))}
-                />
-              )}
-
-              <Text color={"secondary.300"}>
-                {showChat ? "sim" : "não"}
-                Total de <strong>{channelsLength}</strong>{" "}
-                {channelsLength === 1 ? "Canal" : "Canais"} de comunicação
-              </Text>
-            </VStack>
-          </VStack>
-          <Box w={"40%"} maxWidth={"sm"} alignSelf={"stretch"}>
+        <Flex
+          flexDirection={isLargerThan1280 ? "row" : "column"}
+          w={"full"}
+          alignItems={"start"}
+          h={"full"}
+          gap={5}
+        >
+          <CommunityInfo
+            onGetMessages={(messages) => setMessages(messages)}
+            onSelectChannel={(channel) => setSelectedChannel(channel)}
+            community={community}
+          />
+          <Box
+            w={isLargerThan1280 ? "40%" : "75%"}
+            h={isLargerThan1280 ? undefined : "90vh"}
+            top={"50%"}
+            left={"50%"}
+            maxWidth={"sm"}
+            transform={isLargerThan1280 ? undefined : "translate(-50%, -50%)"}
+            alignSelf={"stretch"}
+            position={isLargerThan1280 ? "static" : "absolute"}
+          >
             <SlideFade
               offsetY="20px"
               style={{ width: "100%", height: "100%" }}
@@ -147,7 +120,7 @@ const Comunidade: NextPage<Props> = () => {
               )}
             </SlideFade>
           </Box>
-        </HStack>
+        </Flex>
       </VStack>
     </Box>
   );
