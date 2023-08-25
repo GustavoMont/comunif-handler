@@ -2,7 +2,7 @@ import { ctxType } from "@/types/ctx";
 import { getToken } from "@/utils/auth";
 import axios from "axios";
 
-export const url = process.env.NEXT_PUBLIC_API_URL;
+const url = process.env.NEXT_PUBLIC_API_URL;
 
 const baseURL = `${url}/api/`;
 

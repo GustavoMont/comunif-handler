@@ -83,6 +83,7 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
         login,
         logout() {
           destroyCookie(null, authCookieKey);
+          Router.push("/login");
         },
         user,
       }}

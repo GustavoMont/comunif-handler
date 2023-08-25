@@ -40,6 +40,16 @@ export const listCommunities: listCommunities = async (filters, ctx = null) => {
   return communitiesList;
 };
 
+export const getCommunity = async (id: number, ctx: ctxType | null = null) => {
+  const route = `/communities/${id}`;
+  if (ctx) {
+    const { data: community } = await serverSideAPi(ctx).get<Community>(route);
+    return community;
+  }
+  const { data: community } = await api.get<Community>(route);
+  return community;
+};
+
 type updateCommunity = (id: number, body: FormData) => Promise<Community>;
 export const updateCommunity: updateCommunity = async (id, body) => {
   const { data: community } = await api.patch<Community>(

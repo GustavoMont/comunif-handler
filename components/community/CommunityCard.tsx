@@ -1,4 +1,3 @@
-import { url } from "@/config/api";
 import { Community, UpdateCommunity } from "@/models/Community";
 import { updateCommunity } from "@/services/community-requests";
 import {
@@ -20,6 +19,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import React, { PropsWithChildren, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiX, FiCheck } from "react-icons/fi";
@@ -83,7 +83,6 @@ const CommunityCard: React.FC<PropsWithChildren<Props>> = ({ community }) => {
     },
   });
 
-  const bannerUrl = !!banner && `${url}/${banner}`;
   const changeEditMode = (value: boolean | "toggle") =>
     setIsEditing((prev) => (value === "toggle" ? !prev : value));
   const enableEditMode = () => changeEditMode(true);
@@ -92,10 +91,12 @@ const CommunityCard: React.FC<PropsWithChildren<Props>> = ({ community }) => {
   function EditableControls() {
     return (
       <HStack justifyContent={"end"} spacing={5}>
-        {isEditing && (
+        {isEditing ? (
           <Button onClick={disableEditMode} colorScheme="blackAlpha">
             Cancelar
           </Button>
+        ) : (
+          <></>
         )}
         <Button
           onClick={isEditing ? undefined : enableEditMode}
@@ -104,6 +105,13 @@ const CommunityCard: React.FC<PropsWithChildren<Props>> = ({ community }) => {
         >
           {isEditing ? "Confirmar" : "Editar"}
         </Button>
+        {!isEditing ? (
+          <Link href={`comunidades/${community.id}/`}>
+            <Button colorScheme="primary">Acessar</Button>
+          </Link>
+        ) : (
+          <></>
+        )}
       </HStack>
     );
   }
@@ -141,7 +149,7 @@ const CommunityCard: React.FC<PropsWithChildren<Props>> = ({ community }) => {
             </Stack>
             <Box w={"full"} h={{ sm: "280px", lg: "150px" }}>
               <Image
-                src={bannerUrl ? `${bannerUrl}/?${imageTimeStamp}` : ""}
+                src={banner ? `${banner}/?${imageTimeStamp}` : ""}
                 alt={`Comunidade ${name}`}
                 fallbackSrc="https://via.placeholder.com/150"
                 marginInline={"auto"}

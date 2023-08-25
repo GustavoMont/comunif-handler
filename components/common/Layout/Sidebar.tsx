@@ -168,7 +168,7 @@ interface MobileProps extends FlexProps {
   onOpen: () => void;
 }
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
@@ -234,11 +234,8 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
               bg={useColorModeValue("white", "gray.900")}
               borderColor={useColorModeValue("gray.200", "gray.700")}
             >
-              <MenuItem>Profile</MenuItem>
-              <MenuItem>Settings</MenuItem>
-              <MenuItem>Billing</MenuItem>
               <MenuDivider />
-              <MenuItem>Sign out</MenuItem>
+              <MenuItem onClick={logout}>Sign out</MenuItem>
             </MenuList>
           </Menu>
         </Flex>
