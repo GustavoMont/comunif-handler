@@ -1,7 +1,8 @@
 import api, { serverSideAPi } from "@/config/api";
 import { ListResponse, QueryParams } from "@/models/Api";
-import { Community } from "@/models/Community";
+import { Community, UpdateCommunity } from "@/models/Community";
 import { ctxType } from "@/types/ctx";
+import { handleFormData } from "@/utils/form";
 import { AxiosResponse } from "axios";
 import toSnakeCase from "decamelize-keys";
 
@@ -47,14 +48,23 @@ export const getCommunity = async (id: number, ctx: ctxType | null = null) => {
     return community;
   }
   const { data: community } = await api.get<Community>(route);
-  return community;
+  return community ?? null;
 };
 
-type updateCommunity = (id: number, body: FormData) => Promise<Community>;
+type updateCommunity = (
+  id: number,
+  body: UpdateCommunity
+) => Promise<Community>;
 export const updateCommunity: updateCommunity = async (id, body) => {
+  const multipartForm = new FormData();
+  Object.keys(body).forEach((key) => handleFormData(key, body, multipartForm));
+  if (typeof body.banner !== "string") {
+    const banner = body.banner?.item(0);
+    banner && multipartForm.append("banner", banner);
+  }
   const { data: community } = await api.patch<Community>(
     `/communities/${id}`,
-    body,
+    multipartForm,
     {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -74,4 +84,8 @@ export const createCommunity: createCommunity = async (body) => {
       Accept: "application/json",
     },
   });
+};
+
+export const deleteCommunity = async (communityId: number) => {
+  await api.delete(`/communities/${communityId}`);
 };

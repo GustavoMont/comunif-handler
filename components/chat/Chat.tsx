@@ -66,7 +66,7 @@ export const Chat: React.FC<Props> = ({
       </HStack>
 
       <Flex
-        overflowY={"scroll"}
+        overflowY={"auto"}
         gap={"4"}
         flexDirection={"column-reverse"}
         flex={1}

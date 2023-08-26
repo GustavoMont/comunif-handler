@@ -52,27 +52,9 @@ const CommunityCard: React.FC<PropsWithChildren<Props>> = ({ community }) => {
     },
   });
 
-  const handleFormData = (
-    key: string,
-    formData: UpdateCommunity,
-    form: FormData
-  ) => {
-    const formKey: keyof UpdateCommunity = key as keyof UpdateCommunity;
-    if (formKey !== "banner") {
-      form.set(key, String(formData[formKey]));
-    }
-  };
   const queryClient = useQueryClient();
-  const onSubmit = async (formData: UpdateCommunity) => {
-    const multipartForm = new FormData();
-    Object.keys(formData).forEach((key) =>
-      handleFormData(key, formData, multipartForm)
-    );
-    if (typeof formData.banner !== "string") {
-      const banner = formData.banner?.item(0);
-      banner && multipartForm.set("banner", banner);
-    }
-    await updateCommunity(id, multipartForm);
+  const onSubmit = async (data: UpdateCommunity) => {
+    await updateCommunity(id, data);
     queryClient.invalidateQueries(["communities"]);
   };
   const { isLoading, mutate } = useMutation(handleSubmit(onSubmit), {
