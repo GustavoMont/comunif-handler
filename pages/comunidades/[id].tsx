@@ -6,6 +6,7 @@ import { SendMessagePayload } from "@/models/Form/Chat/SendMessage";
 import { Message } from "@/models/Message";
 import { getCommunity } from "@/services/community-requests";
 import { listCommunityMembers } from "@/services/community-users-requests";
+import { listMessagesByChannel } from "@/services/message-requests";
 import {
   Box,
   Breadcrumb,
@@ -20,6 +21,7 @@ import {
   DehydratedState,
   QueryClient,
   dehydrate,
+  useInfiniteQuery,
   useQuery,
 } from "@tanstack/react-query";
 import { GetServerSideProps, NextPage } from "next";
@@ -42,6 +44,17 @@ const Comunidade: NextPage<Props> = () => {
   const { data: community } = useQuery(["community", communityId], () =>
     getCommunity(Number(communityId))
   );
+  const { data, fetchNextPage } = useInfiniteQuery({
+    queryKey: ["messages", selectedChannel?.id],
+    queryFn: ({ pageParam: page = 1 }) =>
+      listMessagesByChannel(selectedChannel?.id ?? 0, { page }),
+    getNextPageParam({ meta }) {
+      return meta.page < meta.pages ? meta.page + 1 : undefined;
+    },
+    enabled: !!selectedChannel?.id,
+  });
+  const oldMessages = data?.pages.flatMap((page) => page.results) ?? [];
+
   const { data: membersResponse } = useQuery(
     ["community-members", communityId],
     () => listCommunityMembers(Number(communityId))
@@ -119,7 +132,18 @@ const Comunidade: NextPage<Props> = () => {
                     socket.disconnect();
                     setSelectedChannel(null);
                   }}
-                  messages={messages}
+                  messages={
+                    messages
+                      ?.filter(
+                        (message) =>
+                          !oldMessages.some(
+                            (oldMessage) => message.id === oldMessage.id
+                          )
+                      )
+                      .concat(oldMessages) ?? []
+                  }
+                  isLoadingMoreMessages={false}
+                  onReachTop={() => fetchNextPage()}
                 />
               ) : (
                 <></>
