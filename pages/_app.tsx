@@ -39,7 +39,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
       <ChakraProvider theme={theme}>
         <main className={poppins.className}>
           <QueryClientProvider client={queryClient}>
-            <ReactQueryDevtools position="top-right" initialIsOpen={false} />
+            {/* <ReactQueryDevtools position="top-right" initialIsOpen={false} /> */}
             <Hydrate state={pageProps.dehydratedState}>
               {getLayout(<Component {...pageProps} />)}
             </Hydrate>

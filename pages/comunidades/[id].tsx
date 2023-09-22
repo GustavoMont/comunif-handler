@@ -1,4 +1,8 @@
 import { Chat } from "@/components/chat/Chat";
+import {
+  BreadCrumb,
+  BreadCrumbLink,
+} from "@/components/common/Layout/BreadCrumb";
 import { CommunityInfo } from "@/components/community/CommunityInfo";
 import { socket } from "@/config/socket";
 import { CommunityChannel } from "@/models/CommunityChannel";
@@ -7,16 +11,7 @@ import { Message } from "@/models/Message";
 import { getCommunity } from "@/services/community-requests";
 import { listCommunityMembers } from "@/services/community-users-requests";
 import { listMessagesByChannel } from "@/services/message-requests";
-import {
-  Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  Flex,
-  SlideFade,
-  VStack,
-  useMediaQuery,
-} from "@chakra-ui/react";
+import { Box, Flex, SlideFade, VStack, useMediaQuery } from "@chakra-ui/react";
 import {
   DehydratedState,
   QueryClient,
@@ -25,7 +20,6 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { GetServerSideProps, NextPage } from "next";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
@@ -72,11 +66,22 @@ const Comunidade: NextPage<Props> = () => {
   const onSendMessage = (message: SendMessagePayload) => {
     socket.emit("message-channel", message);
   };
-
+  const breadCrumbItems: BreadCrumbLink[] = [
+    {
+      href: "/comunidades",
+      name: "Comunidades",
+    },
+    {
+      href: `/comunidades/${community?.id}`,
+      name: community?.name ?? "Comunidade",
+      isCurrentPage: true,
+    },
+  ];
   return (
     <Box as="main">
       <VStack spacing={5} align={"start"} h={"full"}>
-        <Breadcrumb separator={">"} color="secondary.200">
+        <BreadCrumb links={breadCrumbItems} />
+        {/* <Breadcrumb separator={">"} color="secondary.200">
           <BreadcrumbItem>
             <Link passHref href="/">
               <BreadcrumbLink as={"p"}>Home</BreadcrumbLink>
@@ -94,7 +99,7 @@ const Comunidade: NextPage<Props> = () => {
               <BreadcrumbLink as={"p"}>{community?.name}</BreadcrumbLink>
             </Link>
           </BreadcrumbItem>
-        </Breadcrumb>
+        </Breadcrumb> */}
         <Flex
           flexDirection={isLargerThan1160 ? "row" : "column"}
           w={"full"}
