@@ -1,22 +1,16 @@
 import { CreateCommunity } from "@/models/Community";
 import { createCommunity } from "@/services/community-requests";
-import {
-  Box,
-  Button,
-  Input,
-  Stack,
-  useBoolean,
-  useToast,
-} from "@chakra-ui/react";
+import { Button, Input, Stack, useBoolean } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { FiCheck, FiPlus, FiX } from "react-icons/fi";
 import { TextInput } from "../Form/TextInput";
+import { AddFormContainer } from "../common/Layout/Form/AddFormContainer";
+import { useAppToast } from "@/hooks/useAppToast";
+import { ApiErrorHandler } from "@/utils/ApiError";
 
 export const AddCommunity: React.FC = () => {
-  const toast = useToast();
-
-  const [formOpened, { toggle, off }] = useBoolean();
+  const { toastError, toastSuccess } = useAppToast();
+  const [isOpened, { toggle, off }] = useBoolean();
   const { register, handleSubmit, reset } = useForm<CreateCommunity>();
   const onSubmit = async ({ banner, name, subject }: CreateCommunity) => {
     const formData = new FormData();
@@ -32,49 +26,35 @@ export const AddCommunity: React.FC = () => {
       queryClient.invalidateQueries();
       reset();
       off();
-      toast({
-        position: "top",
+      toastSuccess({
         title: "Comunidade criada com sucesso",
-        colorScheme: "green",
-        icon: <FiCheck size={"24"} />,
       });
     },
-    onError() {
-      toast({
-        position: "top",
-        title: "Ocorreu um erro",
-        description: "Não foi possível criar comunidade",
-        colorScheme: "red",
+    onError(error) {
+      const apiError = new ApiErrorHandler(error);
+      toastError({
+        title: apiError.title,
+        message: apiError.message,
       });
     },
   });
-  const size = "16";
 
   return (
-    <Stack spacing={5}>
-      <Button
-        onClick={toggle}
-        leftIcon={formOpened ? <FiX {...{ size }} /> : <FiPlus {...{ size }} />}
-        w={"full"}
-        colorScheme={formOpened ? "secondary" : "primary"}
-      >
-        {formOpened ? "Fechar" : "Criar comunidade"}
-      </Button>
-
-      {formOpened && (
-        <Box>
-          <form onSubmit={mutate}>
-            <Stack spacing={5}>
-              <TextInput label="Nome:" register={register("name")} />
-              <TextInput label="Assunto:" register={register("subject")} />
-              <Input size="md" type="file" {...register("banner")} />
-              <Button isLoading={isLoading} colorScheme="primary" type="submit">
-                Criar
-              </Button>
-            </Stack>
-          </form>
-        </Box>
-      )}
-    </Stack>
+    <AddFormContainer
+      isOpen={isOpened}
+      toggle={toggle}
+      buttonText="Cria comunidades"
+    >
+      <form onSubmit={mutate}>
+        <Stack spacing={5}>
+          <TextInput label="Nome:" register={register("name")} />
+          <TextInput label="Assunto:" register={register("subject")} />
+          <Input size="md" type="file" {...register("banner")} />
+          <Button isLoading={isLoading} colorScheme="primary" type="submit">
+            Criar
+          </Button>
+        </Stack>
+      </form>
+    </AddFormContainer>
   );
 };

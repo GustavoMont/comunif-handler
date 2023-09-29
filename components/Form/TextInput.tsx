@@ -9,14 +9,18 @@ interface Props extends InputProps {
 export const TextInput: React.FC<Props> = ({
   label,
   register,
-  colorScheme,
+  colorScheme = "primary",
   ...props
 }) => {
   return (
     <Box>
-      {label && <Text mb={1}>{label}</Text>}
+      {label ? (
+        <Text fontWeight={"medium"} mb={1}>
+          {label}
+        </Text>
+      ) : null}
       <Input
-        borderColor={`${colorScheme}.400`}
+        borderColor={`gray.500`}
         focusBorderColor={`${colorScheme}.500`}
         {...props}
         {...register}

@@ -31,8 +31,6 @@ const Login: NextPageWithLayout = () => {
       await login(data);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error(error.message);
-
       toast({
         colorScheme: "red",
         title: "Ocorreu um erro",
@@ -68,10 +66,10 @@ const Login: NextPageWithLayout = () => {
             <Stack spacing="6">
               <Stack spacing="5">
                 <FormControl>
-                  <FormLabel htmlFor="email">Email</FormLabel>
+                  <FormLabel htmlFor="email">Username</FormLabel>
                   <Input {...register("username")} type="text" />
                 </FormControl>
-                <PasswordField {...register("password")} />
+                <PasswordField label="Senha:" {...register("password")} />
               </Stack>
               <HStack justify="space-between">
                 <Checkbox defaultChecked>Remember me</Checkbox>

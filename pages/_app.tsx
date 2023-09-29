@@ -11,7 +11,7 @@ import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { Poppins } from "next/font/google";
 import React, { ReactElement, ReactNode, useState } from "react";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
 import "@/styles/app.css";
 
 const poppins = Poppins({

@@ -1,7 +1,8 @@
 import api, { serverSideAPi } from "@/config/api";
 import { ListResponse } from "@/models/Api";
-import { User } from "@/models/User";
+import { RoleEnum, User } from "@/models/User";
 import { ctxType } from "@/types/ctx";
+import { AxiosResponse } from "axios";
 
 export interface ListUserFilters {
   role?: string;
@@ -23,6 +24,19 @@ export const listUsers = async (
 export const getUser = async (id: number, ctx: ctxType | null = null) => {
   const requester = ctx ? serverSideAPi(ctx) : api;
   const { data: user } = await requester.get<User>(`/users/${id}/`);
+  return user;
+};
+
+export type CreateUser = Omit<User, "avatar" | "bio" | "id" | "role"> & {
+  password: string;
+  confirmPassword: string;
+  role: RoleEnum | "none";
+  birthday: Date;
+};
+
+export const createUser = async (body: CreateUser) => {
+  type Response = AxiosResponse<User>;
+  const { data: user } = await api.post<CreateUser, Response>(`/users`, body);
   return user;
 };
 

@@ -1,7 +1,9 @@
 import { Pagination } from "@/components/common/Layout/Pagination";
+import { ManagementDrawer } from "@/components/common/Management/ManagementDrawer";
+import { AddUser } from "@/components/user/AddUser";
 import { UserCard } from "@/components/user/UserCard";
 import { ListUserFilters, listUsers } from "@/services/user-requests";
-import { Heading, SimpleGrid, Stack, Text } from "@chakra-ui/react";
+import { Flex, Heading, SimpleGrid, Stack, Text } from "@chakra-ui/react";
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
 import { GetServerSideProps } from "next";
 import React, { useState } from "react";
@@ -30,9 +32,19 @@ export default function Usuarios() {
     }));
   return (
     <Stack>
-      <Heading color={"primary.500"} as={"h2"}>
-        Usuários
-      </Heading>
+      <Flex gap={2} alignItems={"center"}>
+        <Heading color={"primary.500"} as={"h2"}>
+          Usuários
+        </Heading>
+        <ManagementDrawer
+          options={[
+            {
+              content: <AddUser />,
+            },
+          ]}
+          title="Usuários"
+        />
+      </Flex>
       <Pagination
         onNext={onNext}
         onPrevious={onPrevious}
