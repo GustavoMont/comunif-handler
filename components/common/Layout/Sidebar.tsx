@@ -22,12 +22,12 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/react";
-import { FiHome, FiTrendingUp, FiMenu, FiChevronDown } from "react-icons/fi";
+import { FiHome, FiMenu, FiChevronDown } from "react-icons/fi";
 import { IconType } from "react-icons";
 import { useAuth } from "@/context/AuthContext";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { HiOutlineUserGroup } from "react-icons/hi";
+import { HiOutlineUserGroup, HiUser } from "react-icons/hi";
 
 interface LinkItemProps {
   name: string;
@@ -36,8 +36,8 @@ interface LinkItemProps {
 }
 const LinkItems: Array<LinkItemProps> = [
   { name: "Home", icon: FiHome, href: "/" },
-  { name: "Comunidades", icon: FiTrendingUp, href: "/comunidades" },
-  { name: "Usuários", icon: HiOutlineUserGroup, href: "/usuarios" },
+  { name: "Comunidades", icon: HiOutlineUserGroup, href: "/comunidades" },
+  { name: "Usuários", icon: HiUser, href: "/usuarios" },
 ];
 
 export default function Sidebar({ children }: { children: ReactNode }) {
@@ -148,7 +148,7 @@ const NavItem = ({ icon, children, href, active, ...rest }: NavItemProps) => {
         {...(active ? selectedStyle : {})}
         {...rest}
       >
-        {icon && (
+        {icon ? (
           <Icon
             mr="4"
             fontSize="16"
@@ -157,7 +157,7 @@ const NavItem = ({ icon, children, href, active, ...rest }: NavItemProps) => {
             }}
             as={icon}
           />
-        )}
+        ) : null}
         {children}
       </Flex>
     </Link>

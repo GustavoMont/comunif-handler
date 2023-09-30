@@ -8,6 +8,7 @@ export interface ListUserFilters {
   role?: string;
   page?: number;
   take?: number;
+  isActive?: boolean;
 }
 
 export const listUsers = async (
@@ -70,4 +71,16 @@ export const updateUserAvatar = async (
     }
   );
   return user;
+};
+
+export interface DeactivateBody {
+  reason: string;
+}
+
+export const deactivateUser = async (userId: number, body: DeactivateBody) => {
+  await api.patch(`/users/${userId}/deactivate`, body);
+};
+
+export const activateUser = async (userId: number) => {
+  await api.patch(`/users/${userId}/activate`);
 };

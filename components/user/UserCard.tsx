@@ -30,8 +30,12 @@ export const UserCard: React.FC<Props> = ({ user, isLoading }) => {
     );
   return (
     <Skeleton isLoaded={!isLoading}>
-      <Center py={6}>
+      <Center
+        className={`${user?.isActive ? "" : "user-inactive-card"}`}
+        py={6}
+      >
         <Stack
+          filter={user?.isActive ? undefined : "grayscale(0.7)"}
           borderWidth="1px"
           borderRadius="lg"
           w={"full"}

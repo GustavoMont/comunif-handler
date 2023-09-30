@@ -16,6 +16,7 @@ import {
 import {
   Avatar,
   AvatarBadge,
+  Box,
   Button,
   Divider,
   Flex,
@@ -27,6 +28,8 @@ import {
   Input,
   ScaleFade,
   Stack,
+  Tag,
+  TagLabel,
   Text,
   Textarea,
   useDisclosure,
@@ -45,16 +48,23 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { HiCamera, HiPencil, HiX } from "react-icons/hi";
 import { AxiosError } from "axios";
-import { User } from "@/models/User";
+import { RoleEnum, User } from "@/models/User";
+import { ActivateButtonControl } from "@/components/user/ActivateButtonControl";
+import { RoleLabel } from "@/components/user/RoleLabel";
 
 export default function Profile() {
   const router = useRouter();
   const toast = useToast();
   const { isOpen: isEditing, onOpen, onClose } = useDisclosure();
+
   const userId = router.query.id ?? "0";
   const { user: currentUser, updateUser: updateAuthUser } = useAuth();
-  const { data: user } = useQuery(["user", userId], () =>
-    getUser(Number(userId))
+  const { data: user } = useQuery(
+    ["user", userId],
+    () => getUser(Number(userId)),
+    {
+      enabled: !!userId,
+    }
   );
   const [hasChanges, setHasChanges] = useState(false);
   const { data: communities = [] } = useQuery(
@@ -67,6 +77,8 @@ export default function Profile() {
   const { register, reset, handleSubmit, watch } = useForm<UpdateWholeUser>();
   const queryClient = useQueryClient();
   const isUserProfile = user?.id === currentUser?.id;
+  const currentUserIsAdmin = currentUser?.role === RoleEnum.admin;
+  const filter = user?.isActive ? undefined : "grayscale(0.8)";
   const breadCrumbItems: BreadCrumbLink[] = [
     {
       href: "/usuarios",
@@ -172,7 +184,7 @@ export default function Profile() {
           justifyItems={["center", null, "start"]}
           templateColumns={["repeat(1, 1fr)", null, "180px repeat(1, 1fr)"]}
         >
-          <GridItem alignSelf={["center", null, "start"]}>
+          <GridItem filter={filter} alignSelf={["center", null, "start"]}>
             <Avatar size="2xl" src={handleAvatarPicture() ?? ""}>
               <ScaleFade initialScale={0.1} in={isEditing}>
                 <AvatarBadge boxSize={"3rem"}>
@@ -193,98 +205,116 @@ export default function Profile() {
             ) : null}
           </GridItem>
           <GridItem colStart={[1, null, 2]} w={[null, null, "auto"]}>
-            <Stack>
-              <EditableText
-                input={
-                  <HStack spacing={4}>
-                    <TextInput
-                      colorScheme="primary"
-                      variant={"flushed"}
-                      register={register("name")}
-                    />
-                    <TextInput
-                      colorScheme="primary"
-                      variant={"flushed"}
-                      register={register("lastName")}
-                    />
-                  </HStack>
-                }
-                isEditing={isEditing}
-                text={
-                  <Heading
-                    textAlign={["center", null, "start"]}
-                    color={"primary.500"}
-                    as={"h2"}
-                  >
-                    {`${user?.name} ${user?.lastName}`}
-                  </Heading>
-                }
-              />
-              <EditableText
-                input={
-                  <TextInput
-                    colorScheme="secondary"
-                    variant={"flushed"}
-                    register={register("username")}
+            <Stack position={"relative"}>
+              <Box filter={filter}>
+                <EditableText
+                  input={
+                    <HStack spacing={4}>
+                      <TextInput
+                        colorScheme="primary"
+                        variant={"flushed"}
+                        register={register("name")}
+                      />
+                      <TextInput
+                        colorScheme="primary"
+                        variant={"flushed"}
+                        register={register("lastName")}
+                      />
+                    </HStack>
+                  }
+                  isEditing={isEditing}
+                  text={
+                    <Heading
+                      textAlign={["center", null, "start"]}
+                      color={"primary.500"}
+                      as={"h2"}
+                    >
+                      {`${user?.name} ${user?.lastName}`}
+                    </Heading>
+                  }
+                />
+                {!isEditing ? (
+                  <RoleLabel
+                    position={"absolute"}
+                    top={"8"}
+                    right={"-2"}
+                    alignSelf={"self-start"}
+                    role={user?.role}
                   />
-                }
-                text={
-                  <Text
-                    textAlign={["center", null, "start"]}
-                    color={"secondary.500"}
-                    as={"p"}
-                    fontSize={"large"}
-                  >
-                    @{user?.username}
-                  </Text>
-                }
-                isEditing={isEditing}
-              />
-              {isUserProfile ? (
-                <Flex
-                  w={["full", null, "min"]}
-                  justifyContent={"center"}
-                  gap={5}
-                >
-                  {isEditing ? (
-                    <Button
-                      leftIcon={<HiX />}
+                ) : null}
+                <EditableText
+                  input={
+                    <TextInput
                       colorScheme="secondary"
-                      onClick={onCancel}
+                      variant={"flushed"}
+                      register={register("username")}
+                    />
+                  }
+                  text={
+                    <Text
+                      textAlign={["center", null, "start"]}
+                      color={"secondary.500"}
+                      as={"p"}
+                      fontSize={"large"}
                     >
-                      Cancelar
-                    </Button>
-                  ) : null}
+                      @{user?.username}
+                    </Text>
+                  }
+                  isEditing={isEditing}
+                />
+              </Box>
+              <Flex
+                wrap={["wrap", null, "nowrap"]}
+                w={["full", null, "min"]}
+                justifyContent={"center"}
+                gap={5}
+              >
+                {isUserProfile ? (
+                  <>
+                    {isEditing ? (
+                      <Button
+                        leftIcon={<HiX />}
+                        colorScheme="secondary"
+                        onClick={onCancel}
+                      >
+                        Cancelar
+                      </Button>
+                    ) : null}
 
-                  {isEditing ? (
-                    <Button
-                      leftIcon={<HiPencil />}
-                      colorScheme="primary"
-                      type="submit"
-                      isDisabled={!hasChanges}
-                      isLoading={isUpdating}
-                    >
-                      Atualizar Perfil
-                    </Button>
-                  ) : (
-                    <Button
-                      leftIcon={<HiPencil />}
-                      colorScheme="primary"
-                      onClick={onOpen}
-                      isDisabled={isEditing && !hasChanges}
-                      isLoading={isUpdating}
-                    >
-                      Editar Perfil
-                    </Button>
-                  )}
-                </Flex>
-              ) : null}
+                    {isEditing ? (
+                      <Button
+                        leftIcon={<HiPencil />}
+                        colorScheme="primary"
+                        type="submit"
+                        isDisabled={!hasChanges}
+                        isLoading={isUpdating}
+                      >
+                        Atualizar Perfil
+                      </Button>
+                    ) : (
+                      <Button
+                        leftIcon={<HiPencil />}
+                        colorScheme="primary"
+                        onClick={onOpen}
+                        isDisabled={isEditing && !hasChanges}
+                        isLoading={isUpdating}
+                      >
+                        Editar Perfil
+                      </Button>
+                    )}
+                  </>
+                ) : null}
+                {currentUserIsAdmin ? (
+                  <ActivateButtonControl user={user} />
+                ) : null}
+              </Flex>
             </Stack>
           </GridItem>
           <GridItem w={"full"} colStart={1} colEnd={3}>
             <Divider borderColor={"primary.500"} />
           </GridItem>
           <GridItem
+            filter={filter}
             as={Stack}
             spacing={[2, null, 5]}
             w={"full"}
