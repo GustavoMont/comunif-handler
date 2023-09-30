@@ -28,8 +28,6 @@ import {
   Input,
   ScaleFade,
   Stack,
-  Tag,
-  TagLabel,
   Text,
   Textarea,
   useDisclosure,
