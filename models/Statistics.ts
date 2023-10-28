@@ -14,6 +14,10 @@ export interface UserStatistics extends Statistic {
   userId: number | null;
   user: User | null;
 }
+export interface CommunityStatistics extends Statistic {
+  userId: number | null;
+  user: User | null;
+}
 
 export interface ChartStatistic {
   count: number;

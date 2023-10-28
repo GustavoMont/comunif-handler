@@ -1,5 +1,6 @@
 import { ChartsTabs } from "@/components/dashboard/ChartsTabs/ChartsTabs";
 import { useAuth } from "@/context/AuthContext";
+import { getCommunitiesCount } from "@/services/statistics/community-statistics";
 import { getUsersCount } from "@/services/statistics/user-statistics";
 import { authCookieKey } from "@/utils/auth";
 import {
@@ -19,9 +20,11 @@ import { parseCookies } from "nookies";
 export default function Home() {
   const { user } = useAuth();
   const { data: usersCountStats, isLoading: isLoadingUsersCount } = useQuery(
-    ["user-count"],
+    ["users-count"],
     () => getUsersCount()
   );
+  const { data: communitiesCount, isLoading: isLoadingCommunitiesCount } =
+    useQuery(["communities-count"], () => getCommunitiesCount());
   return (
     <Stack as={"main"}>
       <Box mb={"4"}>
@@ -37,6 +40,16 @@ export default function Home() {
           ) : (
             <StatNumber color={"primary.400"}>
               {usersCountStats?.total}
+            </StatNumber>
+          )}
+        </Stat>
+        <Stat>
+          <StatLabel>Comunidades ativas</StatLabel>
+          {isLoadingCommunitiesCount ? (
+            <Spinner colorScheme="primary" />
+          ) : (
+            <StatNumber color={"primary.400"}>
+              {communitiesCount?.total}
             </StatNumber>
           )}
         </Stat>
@@ -58,6 +71,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
   const queryClient = new QueryClient();
   queryClient.prefetchQuery(["users-count"], () => getUsersCount(ctx));
+  queryClient.prefetchQuery(["communities-count"], () =>
+    getCommunitiesCount(ctx)
+  );
 
   return {
     props: {

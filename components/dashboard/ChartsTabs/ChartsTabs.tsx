@@ -1,5 +1,6 @@
 import {
   Heading,
+  ScaleFade,
   Tab,
   TabIndicator,
   TabList,
@@ -7,28 +8,42 @@ import {
   TabPanels,
   Tabs,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 import { UsersChartTab } from "./UsersChartTab";
+import { CommunitiesChartTab } from "./CommunitiesChartTab";
+import { v4 } from "uuid";
 
 export const ChartsTabs = () => {
+  const [tabIndex, setTabIndex] = useState(0);
+  type Tab = {
+    title: string;
+    panel: JSX.Element;
+  };
+  const tabs: Tab[] = [
+    {
+      panel: <UsersChartTab />,
+      title: "Usuários",
+    },
+    {
+      panel: <CommunitiesChartTab />,
+      title: "Comunidades",
+    },
+  ];
   return (
-    <Tabs position="relative" variant="unstyled">
+    <Tabs
+      tabIndex={tabIndex}
+      onChange={setTabIndex}
+      position="relative"
+      variant="unstyled"
+    >
       <TabList>
-        <Tab>
-          <Heading fontSize={"sm"} as={"h4"}>
-            Usuários
-          </Heading>
-        </Tab>
-        <Tab>
-          <Heading fontSize={"sm"} as={"h4"}>
-            Comunidades
-          </Heading>
-        </Tab>
-        <Tab>
-          <Heading fontSize={"sm"} as={"h4"}>
-            Mensagens
-          </Heading>
-        </Tab>
+        {tabs.map(({ title }) => (
+          <Tab key={v4()}>
+            <Heading fontSize={"sm"} as={"h4"}>
+              {title}
+            </Heading>
+          </Tab>
+        ))}
       </TabList>
       <TabIndicator
         mt="-1.5px"
@@ -37,15 +52,20 @@ export const ChartsTabs = () => {
         borderRadius="1px"
       />
       <TabPanels>
-        <TabPanel>
-          <UsersChartTab />
-        </TabPanel>
-        <TabPanel>
-          <Heading as={"h4"}>Comunidades</Heading>
-        </TabPanel>
-        <TabPanel>
-          <Heading as={"h4"}>Mensagens</Heading>
-        </TabPanel>
+        {tabs.map(({ panel }, index) => (
+          <TabPanel key={v4()}>
+            <ScaleFade
+              delay={{
+                enter: 0.2,
+                exit: 0.1,
+              }}
+              initialScale={0.8}
+              in={index === tabIndex}
+            >
+              {panel}
+            </ScaleFade>
+          </TabPanel>
+        ))}
       </TabPanels>
     </Tabs>
   );
