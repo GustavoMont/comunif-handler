@@ -27,7 +27,11 @@ import { IconType } from "react-icons";
 import { useAuth } from "@/context/AuthContext";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
-import { HiOutlineUserGroup, HiUser } from "react-icons/hi";
+import {
+  HiOutlineUserGroup,
+  HiOutlineUser,
+  HiOutlineClipboardList,
+} from "react-icons/hi";
 
 interface LinkItemProps {
   name: string;
@@ -37,7 +41,12 @@ interface LinkItemProps {
 const LinkItems: Array<LinkItemProps> = [
   { name: "Home", icon: FiHome, href: "/" },
   { name: "Comunidades", icon: HiOutlineUserGroup, href: "/comunidades" },
-  { name: "Usuários", icon: HiUser, href: "/usuarios" },
+  { name: "Usuários", icon: HiOutlineUser, href: "/usuarios" },
+  {
+    name: "Evasões",
+    icon: HiOutlineClipboardList,
+    href: "/evasoes",
+  },
 ];
 
 export default function Sidebar({ children }: { children: ReactNode }) {
