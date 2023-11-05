@@ -2,6 +2,7 @@ import { CommunityChannel } from "./CommunityChannel";
 
 export interface Community {
   id: number;
+  adminId: number | null;
   name: string;
   subject: string;
   banner: string | null;

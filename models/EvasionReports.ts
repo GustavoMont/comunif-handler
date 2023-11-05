@@ -3,10 +3,11 @@ import { User } from "./User";
 
 export interface EvasionReport {
   id: number;
-  communityId: number | null;
+  communityId: number;
   community: Omit<Community, "isMember">;
-  userId: number | null;
+  userId: number;
   user: User;
   removerId: number | null;
   remover: User | null;
+  reason: string | null;
 }

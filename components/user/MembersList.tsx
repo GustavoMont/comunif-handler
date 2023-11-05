@@ -9,13 +9,15 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { MemberItem } from "./MemberItem";
+import { Community } from "@/models/Community";
 
 interface Props {
   members?: User[];
   total?: number;
+  community: Community;
 }
 
-export const MembersList: React.FC<Props> = ({ members, total }) => {
+export const MembersList: React.FC<Props> = ({ members, total, community }) => {
   const [isLargerThan1160] = useMediaQuery("(min-width: 1160px)");
 
   return (
@@ -32,7 +34,7 @@ export const MembersList: React.FC<Props> = ({ members, total }) => {
       >
         {members?.map((member) => (
           <GridItem key={member.id} maxH={"lg"}>
-            <MemberItem user={member} />
+            <MemberItem community={community} user={member} />
           </GridItem>
         ))}
       </Grid>

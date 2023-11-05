@@ -50,7 +50,7 @@ const Comunidade: NextPage<Props> = () => {
   const oldMessages = data?.pages.flatMap((page) => page.results) ?? [];
 
   const { data: membersResponse } = useQuery(
-    ["community-members", communityId],
+    ["community-members", Number(communityId)],
     () => listCommunityMembers(Number(communityId))
   );
 
@@ -81,25 +81,6 @@ const Comunidade: NextPage<Props> = () => {
     <Box as="main">
       <VStack spacing={5} align={"start"} h={"full"}>
         <BreadCrumb links={breadCrumbItems} />
-        {/* <Breadcrumb separator={">"} color="secondary.200">
-          <BreadcrumbItem>
-            <Link passHref href="/">
-              <BreadcrumbLink as={"p"}>Home</BreadcrumbLink>
-            </Link>
-          </BreadcrumbItem>
-
-          <BreadcrumbItem>
-            <Link passHref href="/comunidades">
-              <BreadcrumbLink as={"p"}>Comunidades</BreadcrumbLink>
-            </Link>
-          </BreadcrumbItem>
-
-          <BreadcrumbItem color={"secondary.500"} isCurrentPage>
-            <Link passHref href="">
-              <BreadcrumbLink as={"p"}>{community?.name}</BreadcrumbLink>
-            </Link>
-          </BreadcrumbItem>
-        </Breadcrumb> */}
         <Flex
           flexDirection={isLargerThan1160 ? "row" : "column"}
           w={"full"}
