@@ -13,6 +13,7 @@
 ::-webkit-scrollbar {
   background-color: var(--primary-100);
   width: 0.5rem;
+  height: 0.2rem;
 }
 ::-webkit-scrollbar-thumb {
   background-color: var(--primary-500);

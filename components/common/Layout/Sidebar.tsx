@@ -22,17 +22,16 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/react";
-import {
-  FiHome,
-  FiTrendingUp,
-  FiMenu,
-  FiBell,
-  FiChevronDown,
-} from "react-icons/fi";
+import { FiHome, FiMenu, FiChevronDown } from "react-icons/fi";
 import { IconType } from "react-icons";
 import { useAuth } from "@/context/AuthContext";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
+import {
+  HiOutlineUserGroup,
+  HiOutlineUser,
+  HiOutlineClipboardList,
+} from "react-icons/hi";
 
 interface LinkItemProps {
   name: string;
@@ -41,8 +40,13 @@ interface LinkItemProps {
 }
 const LinkItems: Array<LinkItemProps> = [
   { name: "Home", icon: FiHome, href: "/" },
-  { name: "Comunidades", icon: FiTrendingUp, href: "/comunidades" },
-  // { name: "Usuários", icon: HiUserGroup },
+  { name: "Comunidades", icon: HiOutlineUserGroup, href: "/comunidades" },
+  { name: "Usuários", icon: HiOutlineUser, href: "/usuarios" },
+  {
+    name: "Evasões",
+    icon: HiOutlineClipboardList,
+    href: "/evasoes",
+  },
 ];
 
 export default function Sidebar({ children }: { children: ReactNode }) {
@@ -99,8 +103,13 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       {...rest}
     >
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-          Logo
+        <Text
+          fontSize="2xl"
+          color={"primary.700"}
+          fontFamily="monospace"
+          fontWeight="bold"
+        >
+          Comunif
         </Text>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
@@ -148,7 +157,7 @@ const NavItem = ({ icon, children, href, active, ...rest }: NavItemProps) => {
         {...(active ? selectedStyle : {})}
         {...rest}
       >
-        {icon && (
+        {icon ? (
           <Icon
             mr="4"
             fontSize="16"
@@ -157,7 +166,7 @@ const NavItem = ({ icon, children, href, active, ...rest }: NavItemProps) => {
             }}
             as={icon}
           />
-        )}
+        ) : null}
         {children}
       </Flex>
     </Link>
@@ -194,17 +203,12 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
         fontSize="2xl"
         fontFamily="monospace"
         fontWeight="bold"
+        color={"primary.500"}
       >
-        Logo
+        Comunif
       </Text>
 
       <HStack spacing={{ base: "0", md: "6" }}>
-        <IconButton
-          size="lg"
-          variant="ghost"
-          aria-label="open menu"
-          icon={<FiBell />}
-        />
         <Flex alignItems={"center"}>
           <Menu>
             <MenuButton
@@ -213,7 +217,10 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
               _focus={{ boxShadow: "none" }}
             >
               <HStack>
-                <Avatar size={"sm"} src={user?.avatar || undefined} />
+                <Avatar
+                  size={"sm"}
+                  src={`${user?.avatar}?${Date.now()}` || undefined}
+                />
                 <VStack
                   display={{ base: "none", md: "flex" }}
                   alignItems="flex-start"
@@ -234,8 +241,11 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
               bg={useColorModeValue("white", "gray.900")}
               borderColor={useColorModeValue("gray.200", "gray.700")}
             >
+              <Link href={`/usuarios/${user?.id}`}>
+                <MenuItem>Perfil</MenuItem>
+              </Link>
               <MenuDivider />
-              <MenuItem onClick={logout}>Sign out</MenuItem>
+              <MenuItem onClick={logout}>Sair</MenuItem>
             </MenuList>
           </Menu>
         </Flex>

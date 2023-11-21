@@ -11,7 +11,7 @@ import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { Poppins } from "next/font/google";
 import React, { ReactElement, ReactNode, useState } from "react";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
 import "@/styles/app.css";
 
 const poppins = Poppins({
@@ -39,7 +39,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
       <ChakraProvider theme={theme}>
         <main className={poppins.className}>
           <QueryClientProvider client={queryClient}>
-            <ReactQueryDevtools position="top-right" initialIsOpen={false} />
+            {/* <ReactQueryDevtools position="top-right" initialIsOpen={false} /> */}
             <Hydrate state={pageProps.dehydratedState}>
               {getLayout(<Component {...pageProps} />)}
             </Hydrate>

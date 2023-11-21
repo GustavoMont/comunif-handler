@@ -22,7 +22,6 @@ export const colors = {
     "800": "#660019",
     "900": "#33000D",
   },
-
   lightBlack: "#2A3C4F",
   black: "#011627",
   darkblack: "#141414",

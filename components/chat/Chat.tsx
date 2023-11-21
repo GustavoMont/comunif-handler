@@ -59,27 +59,6 @@ export const Chat: React.FC<Props> = ({
       onReachTop();
     }
   }, [inView, onReachTop]);
-  // useEffect(() => {
-  //   const list = messageListRef.current;
-  //   const onScroll = () => {
-  //     if (!list) return;
-  //     const scrollHeight = list.scrollHeight;
-  //     const scrollTop = list.scrollTop;
-  //     const shouldRunCallback = scrollTop / scrollHeight <= -0.7;
-
-  //     if (shouldRunCallback && !isLoadingMoreMessages) {
-  //       onReachTop();
-  //     }
-  //   };
-
-  //   if (list) {
-  //     list.addEventListener("scroll", onScroll);
-  //   }
-
-  //   return () => {
-  //     list?.removeEventListener("scroll", onScroll);
-  //   };
-  // }, [isLoadingMoreMessages, onReachTop]);
 
   const [white] = useToken("colors", ["white"]);
   return (

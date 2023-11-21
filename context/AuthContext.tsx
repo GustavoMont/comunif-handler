@@ -22,6 +22,7 @@ interface IAuthContext {
   login: loginType;
   user: User | null;
   logout(): void;
+  updateUser(user: User): void;
 }
 
 const AuthContext = createContext({} as IAuthContext);
@@ -38,6 +39,10 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
       throw new Error("User does not exists");
     }
   };
+  const updateUser = (user: User) => {
+    setUser(user);
+  };
+
   const logout = () => {
     deleteTokens();
     Router.push("/login");
@@ -81,6 +86,7 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({ children }) => {
       value={{
         login,
         logout,
+        updateUser,
         user,
       }}
     >

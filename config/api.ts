@@ -7,6 +7,7 @@ import {
   storeTokens,
 } from "@/utils/auth";
 import axios, { AxiosError } from "axios";
+import decamelizeKeys from "decamelize-keys";
 import Router from "next/router";
 
 const url = process.env.NEXT_PUBLIC_API_URL;
@@ -20,7 +21,6 @@ export const api = axios.create({
 export const serverSideAPi = (ctx: ctxType) => {
   const token = getToken(ctx);
   api.defaults.headers["Authorization"] = `Bearer ${token}`;
-
   return api;
 };
 
@@ -29,6 +29,7 @@ api.interceptors.request.use(
     const token = getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      config.params = decamelizeKeys(config.params);
     }
     return config;
   },

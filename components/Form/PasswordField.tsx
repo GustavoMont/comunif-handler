@@ -12,8 +12,12 @@ import {
 import { forwardRef, useRef } from "react";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 
-export const PasswordField = forwardRef<HTMLInputElement, InputProps>(
-  (props, ref) => {
+interface Props extends InputProps {
+  label?: string;
+}
+
+export const PasswordField = forwardRef<HTMLInputElement, Props>(
+  ({ label, ...props }, ref) => {
     const { isOpen, onToggle } = useDisclosure();
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -27,7 +31,7 @@ export const PasswordField = forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <FormControl>
-        <FormLabel htmlFor="password">Password</FormLabel>
+        <FormLabel htmlFor="password">{label}</FormLabel>
         <InputGroup>
           <InputRightElement>
             <IconButton
@@ -42,6 +46,8 @@ export const PasswordField = forwardRef<HTMLInputElement, InputProps>(
             ref={mergeRef}
             name="password"
             type={isOpen ? "text" : "password"}
+            borderColor={"gray.500"}
+            focusBorderColor="primary.500"
             autoComplete="current-password"
             required
             {...props}

@@ -131,7 +131,13 @@ export const CommunityInfo: React.FC<CommunityInfoProps> = ({
             {channelsLength === 1 ? "Canal" : "Canais"} de comunicação
           </Text>
           <Divider borderColor={"primary.300"} w={"full"} />
-          <MembersList members={members?.results} total={members?.meta.total} />
+          {community ? (
+            <MembersList
+              community={community}
+              members={members?.results}
+              total={members?.meta.total}
+            />
+          ) : null}
         </VStack>
       </VStack>
     </>

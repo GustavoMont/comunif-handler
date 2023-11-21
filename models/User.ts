@@ -7,6 +7,7 @@ export interface User {
   name: string;
   username: string;
   role: RoleEnum;
+  isActive: boolean;
 }
 
 export enum RoleEnum {

@@ -89,3 +89,10 @@ export const createCommunity: createCommunity = async (body) => {
 export const deleteCommunity = async (communityId: number) => {
   await api.delete(`/communities/${communityId}`);
 };
+
+export const listUserCommunities = async (userId: number) => {
+  const { data: communities } = await api.get<Community[]>(
+    `/communities/users/${userId}`
+  );
+  return communities;
+};

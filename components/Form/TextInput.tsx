@@ -6,11 +6,25 @@ interface Props extends InputProps {
   register?: UseFormRegisterReturn;
 }
 
-export const TextInput: React.FC<Props> = ({ label, register, ...props }) => {
+export const TextInput: React.FC<Props> = ({
+  label,
+  register,
+  colorScheme = "primary",
+  ...props
+}) => {
   return (
     <Box>
-      {label && <Text mb={1}>{label}</Text>}
-      <Input {...props} {...register} />
+      {label ? (
+        <Text fontWeight={"medium"} mb={1}>
+          {label}
+        </Text>
+      ) : null}
+      <Input
+        borderColor={`gray.500`}
+        focusBorderColor={`${colorScheme}.500`}
+        {...props}
+        {...register}
+      />
     </Box>
   );
 };
