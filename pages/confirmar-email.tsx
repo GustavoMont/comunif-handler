@@ -25,10 +25,11 @@ const ConfirmEmail: NextPageWithLayout = () => {
   };
   const { toastError } = useAppToast();
   const router = useRouter();
+  const goToCode = () => router.push("/redefinir-senha/confirmar-codigo");
   const { mutate, isLoading } = useMutation(onSendEmail, {
     onSuccess(data) {
       storeHashedEmail(data.email);
-      router.push("/redefinir-senha/confirmar-codigo");
+      goToCode();
     },
     onError(error) {
       const apiError = new ApiErrorHandler(error);
@@ -80,6 +81,7 @@ const ConfirmEmail: NextPageWithLayout = () => {
               <Button isLoading={isLoading} type="submit" colorScheme="primary">
                 Enviar código
               </Button>
+              <Button onClick={goToCode}>Já possuo o código</Button>
             </Stack>
           </Box>
         </Stack>
