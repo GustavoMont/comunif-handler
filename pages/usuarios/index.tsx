@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
 import { GetServerSideProps } from "next";
+import Head from "next/head";
 import React, { useState } from "react";
 
 const defaultFilters: ListUserFilters = {
@@ -52,62 +53,68 @@ export default function Usuarios() {
       ...prev,
       page: page ? Math.max(page - 1, 1) : 1,
     }));
-  return (
-    <Stack as={"main"}>
-      <Flex gap={2} alignItems={"center"}>
-        <Heading color={"primary.500"} as={"h2"}>
-          Usuários
-        </Heading>
-        <ManagementDrawer
-          options={[
-            {
-              content: <AddUser />,
-            },
-          ]}
-          title="Usuários"
-        />
-      </Flex>
-      <Box paddingY={"5"}>
-        <RadioGroup
-          defaultValue="active"
-          onChange={onChangeRadio}
-          colorScheme="primary"
-        >
-          <HStack>
-            <Radio value="all">Todas</Radio>
-            <Radio value="active">Ativos</Radio>
-            <Radio value="deactive">Inativos</Radio>
-          </HStack>
-        </RadioGroup>
-      </Box>
-      <Pagination
-        onNext={onNext}
-        onPrevious={onPrevious}
-        alignSelf={"center"}
-        currentPage={filters?.page || 1}
-        pages={meta?.pages || 0}
-      />
 
-      <Text color="primary.500">
-        Total de{" "}
-        <Text as={"span"} fontWeight={"bold"}>
-          {meta?.total ?? 0}
-        </Text>{" "}
-        usuários
-      </Text>
-      <SimpleGrid
-        columns={[1, null, null, null, 2, 3]}
-        spacing={5}
-        style={{ listStyle: "none" }}
-        as={"ul"}
-      >
-        {users.map((user) => (
-          <li key={user.id}>
-            <UserCard isLoading={isLoading} user={user} />
-          </li>
-        ))}
-      </SimpleGrid>
-    </Stack>
+  return (
+    <>
+      <Head>
+        <title>Usuários - Comunif</title>
+      </Head>
+      <Stack as={"main"}>
+        <Flex gap={2} alignItems={"center"}>
+          <Heading color={"primary.500"} as={"h2"}>
+            Usuários
+          </Heading>
+          <ManagementDrawer
+            options={[
+              {
+                content: <AddUser />,
+              },
+            ]}
+            title="Usuários"
+          />
+        </Flex>
+        <Box paddingY={"5"}>
+          <RadioGroup
+            defaultValue="active"
+            onChange={onChangeRadio}
+            colorScheme="primary"
+          >
+            <HStack>
+              <Radio value="all">Todas</Radio>
+              <Radio value="active">Ativos</Radio>
+              <Radio value="deactive">Inativos</Radio>
+            </HStack>
+          </RadioGroup>
+        </Box>
+        <Pagination
+          onNext={onNext}
+          onPrevious={onPrevious}
+          alignSelf={"center"}
+          currentPage={filters?.page || 1}
+          pages={meta?.pages || 0}
+        />
+
+        <Text color="primary.500">
+          Total de{" "}
+          <Text as={"span"} fontWeight={"bold"}>
+            {meta?.total ?? 0}
+          </Text>{" "}
+          usuários
+        </Text>
+        <SimpleGrid
+          columns={[1, null, null, null, 2, 3]}
+          spacing={5}
+          style={{ listStyle: "none" }}
+          as={"ul"}
+        >
+          {users.map((user) => (
+            <li key={user.id}>
+              <UserCard isLoading={isLoading} user={user} />
+            </li>
+          ))}
+        </SimpleGrid>
+      </Stack>
+    </>
   );
 }
 
