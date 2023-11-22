@@ -17,6 +17,7 @@ import { useRouter } from "next/router";
 import React, { ReactElement } from "react";
 import { useForm } from "react-hook-form";
 import { NextPageWithLayout } from "../_app";
+import Head from "next/head";
 
 const ChangePassword: NextPageWithLayout = () => {
   const { toastError, toastSuccess } = useAppToast();
@@ -45,48 +46,57 @@ const ChangePassword: NextPageWithLayout = () => {
     mutate(data);
   };
   return (
-    <Container
-      maxW="lg"
-      py={{ base: "12", md: "24" }}
-      px={{ base: "0", sm: "8" }}
-      border={"Background"}
-    >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing="8">
-          <Stack spacing="6">
-            <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
-              <Heading color={"primary.500"} size={{ base: "sm", md: "lg" }}>
-                Redefinir senha
-              </Heading>
-            </Stack>
-          </Stack>
-          <Box
-            py={{ base: "0", sm: "8" }}
-            px={{ base: "4", sm: "10" }}
-            bg={{ base: "transparent", sm: "bg-surface" }}
-            boxShadow={{ base: "none", sm: "md" }}
-            borderRadius={{ base: "none", sm: "xl" }}
-          >
+    <>
+      <Head>
+        <title>Redefinir Senha</title>
+      </Head>
+      <Container
+        maxW="lg"
+        py={{ base: "12", md: "24" }}
+        px={{ base: "0", sm: "8" }}
+        border={"Background"}
+      >
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Stack spacing="8">
             <Stack spacing="6">
-              <Stack spacing="5">
-                <FormControl>
-                  <PasswordField label="Senha:" {...register("password")} />
-                </FormControl>
-                <FormControl>
-                  <PasswordField
-                    label="Confirmar senha:"
-                    {...register("confirmPassword")}
-                  />
-                </FormControl>
+              <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
+                <Heading color={"primary.500"} size={{ base: "sm", md: "lg" }}>
+                  Redefinir senha
+                </Heading>
               </Stack>
-              <Button isLoading={isLoading} type="submit" colorScheme="primary">
-                Redefinir senha
-              </Button>
             </Stack>
-          </Box>
-        </Stack>
-      </form>
-    </Container>
+            <Box
+              py={{ base: "0", sm: "8" }}
+              px={{ base: "4", sm: "10" }}
+              bg={{ base: "transparent", sm: "bg-surface" }}
+              boxShadow={{ base: "none", sm: "md" }}
+              borderRadius={{ base: "none", sm: "xl" }}
+            >
+              <Stack spacing="6">
+                <Stack spacing="5">
+                  <FormControl>
+                    <PasswordField label="Senha:" {...register("password")} />
+                  </FormControl>
+                  <FormControl>
+                    <PasswordField
+                      label="Confirmar senha:"
+                      {...register("confirmPassword")}
+                    />
+                  </FormControl>
+                </Stack>
+                <Button
+                  isLoading={isLoading}
+                  type="submit"
+                  colorScheme="primary"
+                >
+                  Redefinir senha
+                </Button>
+              </Stack>
+            </Box>
+          </Stack>
+        </form>
+      </Container>
+    </>
   );
 };
 

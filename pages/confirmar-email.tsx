@@ -17,6 +17,7 @@ import { storeHashedEmail } from "@/utils/auth";
 import { useRouter } from "next/router";
 import { ApiErrorHandler } from "@/utils/ApiError";
 import { useAppToast } from "@/hooks/useAppToast";
+import Head from "next/head";
 
 const ConfirmEmail: NextPageWithLayout = () => {
   const { handleSubmit, register } = useForm<ResetPasswordBody>();
@@ -43,50 +44,59 @@ const ConfirmEmail: NextPageWithLayout = () => {
     mutate(data);
   };
   return (
-    <Container
-      maxW="lg"
-      py={{ base: "12", md: "24" }}
-      px={{ base: "0", sm: "8" }}
-      border={"Background"}
-    >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing="8">
-          <Stack spacing="6">
-            <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
-              <Heading color={"primary.500"} size={{ base: "sm", md: "lg" }}>
-                Redefinir senha
-              </Heading>
-            </Stack>
-          </Stack>
-          <Box
-            py={{ base: "0", sm: "8" }}
-            px={{ base: "4", sm: "10" }}
-            bg={{ base: "transparent", sm: "bg-surface" }}
-            boxShadow={{ base: "none", sm: "md" }}
-            borderRadius={{ base: "none", sm: "xl" }}
-          >
+    <>
+      <Head>
+        <title>Confirme seu e-mail</title>
+      </Head>
+      <Container
+        maxW="lg"
+        py={{ base: "12", md: "24" }}
+        px={{ base: "0", sm: "8" }}
+        border={"Background"}
+      >
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Stack spacing="8">
             <Stack spacing="6">
-              <Stack spacing="5">
-                <FormControl>
-                  <TextInput
-                    label="E-mail:"
-                    register={register("email")}
-                    type="text"
-                  />
-                  <Text color={"secondary.200"} fontSize={"sm"}>
-                    Enviaremos um código de recuperação para seu e-mail
-                  </Text>
-                </FormControl>
+              <Stack spacing={{ base: "2", md: "3" }} textAlign="center">
+                <Heading color={"primary.500"} size={{ base: "sm", md: "lg" }}>
+                  Redefinir senha
+                </Heading>
               </Stack>
-              <Button isLoading={isLoading} type="submit" colorScheme="primary">
-                Enviar código
-              </Button>
-              <Button onClick={goToCode}>Já possuo o código</Button>
             </Stack>
-          </Box>
-        </Stack>
-      </form>
-    </Container>
+            <Box
+              py={{ base: "0", sm: "8" }}
+              px={{ base: "4", sm: "10" }}
+              bg={{ base: "transparent", sm: "bg-surface" }}
+              boxShadow={{ base: "none", sm: "md" }}
+              borderRadius={{ base: "none", sm: "xl" }}
+            >
+              <Stack spacing="6">
+                <Stack spacing="5">
+                  <FormControl>
+                    <TextInput
+                      label="E-mail:"
+                      register={register("email")}
+                      type="text"
+                    />
+                    <Text color={"secondary.200"} fontSize={"sm"}>
+                      Enviaremos um código de recuperação para seu e-mail
+                    </Text>
+                  </FormControl>
+                </Stack>
+                <Button
+                  isLoading={isLoading}
+                  type="submit"
+                  colorScheme="primary"
+                >
+                  Enviar código
+                </Button>
+                <Button onClick={goToCode}>Já possuo o código</Button>
+              </Stack>
+            </Box>
+          </Stack>
+        </form>
+      </Container>
+    </>
   );
 };
 
