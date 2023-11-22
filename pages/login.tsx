@@ -45,7 +45,7 @@ const Login: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>Seja bem-vindo ao Painel Comunif</title>
+        <title>Login - Comunif</title>
       </Head>
       <Container
         maxW="lg"
