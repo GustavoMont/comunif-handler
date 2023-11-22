@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
 import { GetServerSideProps } from "next";
+import Head from "next/head";
 import { parseCookies } from "nookies";
 
 export default function Home() {
@@ -26,36 +27,41 @@ export default function Home() {
   const { data: communitiesCount, isLoading: isLoadingCommunitiesCount } =
     useQuery(["communities-count"], () => getCommunitiesCount());
   return (
-    <Stack as={"main"}>
-      <Box mb={"4"}>
-        <Heading as={"h2"} color={"primary.500"}>
-          Olá, {user?.name}
-        </Heading>
-      </Box>
-      <StatGroup>
-        <Stat>
-          <StatLabel>Usuários ativos</StatLabel>
-          {isLoadingUsersCount ? (
-            <Spinner colorScheme="primary" />
-          ) : (
-            <StatNumber color={"primary.400"}>
-              {usersCountStats?.total}
-            </StatNumber>
-          )}
-        </Stat>
-        <Stat>
-          <StatLabel>Comunidades ativas</StatLabel>
-          {isLoadingCommunitiesCount ? (
-            <Spinner colorScheme="primary" />
-          ) : (
-            <StatNumber color={"primary.400"}>
-              {communitiesCount?.total}
-            </StatNumber>
-          )}
-        </Stat>
-      </StatGroup>
-      <ChartsTabs />
-    </Stack>
+    <>
+      <Head>
+        <title>Bem vindo, {user?.name} - Comunif</title>
+      </Head>
+      <Stack as={"main"}>
+        <Box mb={"4"}>
+          <Heading as={"h2"} color={"primary.500"}>
+            Olá, {user?.name}
+          </Heading>
+        </Box>
+        <StatGroup>
+          <Stat>
+            <StatLabel>Usuários ativos</StatLabel>
+            {isLoadingUsersCount ? (
+              <Spinner colorScheme="primary" />
+            ) : (
+              <StatNumber color={"primary.400"}>
+                {usersCountStats?.total}
+              </StatNumber>
+            )}
+          </Stat>
+          <Stat>
+            <StatLabel>Comunidades ativas</StatLabel>
+            {isLoadingCommunitiesCount ? (
+              <Spinner colorScheme="primary" />
+            ) : (
+              <StatNumber color={"primary.400"}>
+                {communitiesCount?.total}
+              </StatNumber>
+            )}
+          </Stat>
+        </StatGroup>
+        <ChartsTabs />
+      </Stack>
+    </>
   );
 }
 

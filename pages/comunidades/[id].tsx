@@ -20,6 +20,7 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { GetServerSideProps, NextPage } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
@@ -78,67 +79,75 @@ const Comunidade: NextPage<Props> = () => {
     },
   ];
   return (
-    <Box as="main">
-      <VStack spacing={5} align={"start"} h={"full"}>
-        <BreadCrumb links={breadCrumbItems} />
-        <Flex
-          flexDirection={isLargerThan1160 ? "row" : "column"}
-          w={"full"}
-          alignItems={"start"}
-          h={"full"}
-          gap={5}
-        >
-          <CommunityInfo
-            members={membersResponse}
-            onGetMessages={(messages) => setMessages(messages)}
-            onSelectChannel={(channel) => setSelectedChannel(channel)}
-            community={community}
-          />
-          <Box
-            w={isLargerThan1160 ? "40%" : "75%"}
-            h={isLargerThan1160 ? "80vh" : "90vh"}
-            top={"45%"}
-            left={"50%"}
-            maxWidth={"sm"}
-            transform={isLargerThan1160 ? undefined : "translate(-50%, -50%)"}
-            alignSelf={"stretch"}
-            position={isLargerThan1160 ? "static" : "absolute"}
+    <>
+      <Head>
+        <title>
+          {selectedChannel ? `${selectedChannel.channelType.name}/` : ""}{" "}
+          {community?.name} - Comunif
+        </title>
+      </Head>
+      <Box as="main">
+        <VStack spacing={5} align={"start"} h={"full"}>
+          <BreadCrumb links={breadCrumbItems} />
+          <Flex
+            flexDirection={isLargerThan1160 ? "row" : "column"}
+            w={"full"}
+            alignItems={"start"}
+            h={"full"}
+            gap={5}
           >
-            <SlideFade
-              offsetY="20px"
-              style={{ width: "100%", height: "100%" }}
-              in={showChat}
+            <CommunityInfo
+              members={membersResponse}
+              onGetMessages={(messages) => setMessages(messages)}
+              onSelectChannel={(channel) => setSelectedChannel(channel)}
+              community={community}
+            />
+            <Box
+              w={isLargerThan1160 ? "40%" : "75%"}
+              h={isLargerThan1160 ? "80vh" : "90vh"}
+              top={"45%"}
+              left={"50%"}
+              maxWidth={"sm"}
+              transform={isLargerThan1160 ? undefined : "translate(-50%, -50%)"}
+              alignSelf={"stretch"}
+              position={isLargerThan1160 ? "static" : "absolute"}
             >
-              {showChat ? (
-                <Chat
-                  onSendMessage={onSendMessage}
-                  targetId={selectedChannel.id ?? 0}
-                  chatName={selectedChannel.channelType.name ?? "chat"}
-                  onClickOut={() => {
-                    socket.disconnect();
-                    setSelectedChannel(null);
-                  }}
-                  messages={
-                    messages
-                      ?.filter(
-                        (message) =>
-                          !oldMessages.some(
-                            (oldMessage) => message.id === oldMessage.id
-                          )
-                      )
-                      .concat(oldMessages) ?? []
-                  }
-                  isLoadingMoreMessages={false}
-                  onReachTop={() => fetchNextPage()}
-                />
-              ) : (
-                <></>
-              )}
-            </SlideFade>
-          </Box>
-        </Flex>
-      </VStack>
-    </Box>
+              <SlideFade
+                offsetY="20px"
+                style={{ width: "100%", height: "100%" }}
+                in={showChat}
+              >
+                {showChat ? (
+                  <Chat
+                    onSendMessage={onSendMessage}
+                    targetId={selectedChannel.id ?? 0}
+                    chatName={selectedChannel.channelType.name ?? "chat"}
+                    onClickOut={() => {
+                      socket.disconnect();
+                      setSelectedChannel(null);
+                    }}
+                    messages={
+                      messages
+                        ?.filter(
+                          (message) =>
+                            !oldMessages.some(
+                              (oldMessage) => message.id === oldMessage.id
+                            )
+                        )
+                        .concat(oldMessages) ?? []
+                    }
+                    isLoadingMoreMessages={false}
+                    onReachTop={() => fetchNextPage()}
+                  />
+                ) : (
+                  <></>
+                )}
+              </SlideFade>
+            </Box>
+          </Flex>
+        </VStack>
+      </Box>
+    </>
   );
 };
 
