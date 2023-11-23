@@ -61,10 +61,7 @@ export const MemberItem: React.FC<Props> = ({ user, community }) => {
             </Heading>
           </PopoverHeader>
           <PopoverBody>
-            <Flex gap={4}>
-              <Button onClick={setOpen.on} w={"full"} colorScheme="red">
-                Banir
-              </Button>
+            <Flex direction={"column"} gap={4}>
               <Button
                 as={Link}
                 href={`/usuarios/${user.id}`}
@@ -72,6 +69,9 @@ export const MemberItem: React.FC<Props> = ({ user, community }) => {
                 colorScheme="primary"
               >
                 Ver Perfil
+              </Button>
+              <Button onClick={setOpen.on} w={"full"} colorScheme="red">
+                Banir da Comunidade
               </Button>
             </Flex>
           </PopoverBody>
