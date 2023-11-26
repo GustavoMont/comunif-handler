@@ -20,3 +20,9 @@ export const listUserStatistics = async (ctx: ctxType | null = null) => {
   >(`${BASE_URL}`);
   return userStatistics;
 };
+
+export const createUserStatistics = async (ctx: ctxType | null = null) => {
+  const requester = handleRequester(ctx);
+  const { data } = await requester.post<UserStatistics>(BASE_URL);
+  return data;
+};

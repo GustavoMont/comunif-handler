@@ -19,6 +19,11 @@ export interface CommunityStatistics extends Statistic {
   user: User | null;
 }
 
+export interface MessageStatistics extends Statistic {
+  userId: number | null;
+  user: User | null;
+}
+
 export interface ChartStatistic {
   count: number;
   month: string;

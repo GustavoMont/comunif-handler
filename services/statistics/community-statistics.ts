@@ -15,8 +15,15 @@ export const getCommunitiesCount = async (ctx: ctxType | null = null) => {
 
 export const listCommunityStatistics = async (ctx: ctxType | null = null) => {
   const requester = handleRequester(ctx);
-  const { data: userStatistics } = await requester.get<
+  const { data: communityStatistics } = await requester.get<
     ListResponse<CommunityStatistics>
   >(`${BASE_URL}`);
-  return userStatistics;
+  return communityStatistics;
+};
+
+export const createCommunityStatistics = async (ctx: ctxType | null = null) => {
+  const requester = handleRequester(ctx);
+  const { data: communityStatistics } =
+    await requester.post<CommunityStatistics>(BASE_URL);
+  return communityStatistics;
 };
