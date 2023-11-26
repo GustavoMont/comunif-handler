@@ -72,9 +72,7 @@ export const CommunityInfo: React.FC<CommunityInfoProps> = ({
             onClose={onCloseDelete}
           />
         </>
-      ) : (
-        <></>
-      )}
+      ) : null}
 
       <Box>
         <Image

@@ -11,7 +11,6 @@ import {
   Heading,
   Link,
   Stack,
-  useToast,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "@/context/AuthContext";
@@ -19,6 +18,8 @@ import NextLink from "next/link";
 import { NextPageWithLayout } from "./_app";
 import { TextInput } from "@/components/Form/TextInput";
 import Head from "next/head";
+import { useMutation } from "@tanstack/react-query";
+import { useAppToast } from "@/hooks/useAppToast";
 
 const Login: NextPageWithLayout = () => {
   interface LoginPayload {
@@ -26,20 +27,21 @@ const Login: NextPageWithLayout = () => {
     password: string;
   }
   const { handleSubmit, register } = useForm<LoginPayload>();
-  const toast = useToast();
+
+  const { toastError } = useAppToast();
   const { login } = useAuth();
 
-  const onSubmit = async (data: LoginPayload) => {
-    try {
-      await login(data);
-    } catch (error) {
-      toast({
-        colorScheme: "red",
+  const { mutate, isLoading } = useMutation(login, {
+    onError() {
+      toastError({
         title: "Ocorreu um erro",
-        description: "Usuário ou senha incorretos",
-        duration: 3000,
+        message: "Usuário ou senha incorretos",
       });
-    }
+    },
+  });
+
+  const onSubmit = async (data: LoginPayload) => {
+    mutate(data);
   };
 
   return (
@@ -91,7 +93,12 @@ const Login: NextPageWithLayout = () => {
               </Stack>
             </Box>
             <Stack spacing="6">
-              <Button type="submit" variant="solid" colorScheme="primary">
+              <Button
+                isLoading={isLoading}
+                type="submit"
+                variant="solid"
+                colorScheme="primary"
+              >
                 Login
               </Button>
             </Stack>

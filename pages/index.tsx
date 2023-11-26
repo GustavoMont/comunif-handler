@@ -1,6 +1,7 @@
 import { ChartsTabs } from "@/components/dashboard/ChartsTabs/ChartsTabs";
 import { useAuth } from "@/context/AuthContext";
 import { getCommunitiesCount } from "@/services/statistics/community-statistics";
+import { getMessagesCount } from "@/services/statistics/message-statistics-request";
 import { getUsersCount } from "@/services/statistics/user-statistics";
 import { authCookieKey } from "@/utils/auth";
 import {
@@ -20,12 +21,20 @@ import { parseCookies } from "nookies";
 
 export default function Home() {
   const { user } = useAuth();
+
   const { data: usersCountStats, isLoading: isLoadingUsersCount } = useQuery(
     ["users-count"],
     () => getUsersCount()
   );
+
   const { data: communitiesCount, isLoading: isLoadingCommunitiesCount } =
     useQuery(["communities-count"], () => getCommunitiesCount());
+
+  const { data: messagesCount, isLoading: isLoadingMessagesCount } = useQuery(
+    ["messages-count"],
+    () => getMessagesCount()
+  );
+
   return (
     <>
       <Head>
@@ -58,6 +67,16 @@ export default function Home() {
               </StatNumber>
             )}
           </Stat>
+          <Stat>
+            <StatLabel>Mensagens enviadas neste mês:</StatLabel>
+            {isLoadingMessagesCount ? (
+              <Spinner colorScheme="primary" />
+            ) : (
+              <StatNumber color={"primary.400"}>
+                {messagesCount?.total}
+              </StatNumber>
+            )}
+          </Stat>
         </StatGroup>
         <ChartsTabs />
       </Stack>
@@ -80,6 +99,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   queryClient.prefetchQuery(["communities-count"], () =>
     getCommunitiesCount(ctx)
   );
+  queryClient.prefetchQuery(["messages-count"], () => getMessagesCount(ctx));
 
   return {
     props: {

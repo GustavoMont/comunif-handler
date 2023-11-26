@@ -27,7 +27,7 @@ interface StoreTokensParams {
 
 export const storeTokens = ({ refreshToken, access }: StoreTokensParams) => {
   setCookie(null, authCookieKey, access, {
-    maxAge: 60 * 60 * 1,
+    maxAge: 60 * 60 * 1.5,
   });
   if (refreshToken) {
     setCookie(null, refreshCookieKey, refreshToken, {

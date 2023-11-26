@@ -140,7 +140,7 @@ const DocumentHeader = () => (
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery(["communities"], () =>
+  queryClient.prefetchQuery(["communities"], () =>
     listCommunities(initialQuery, ctx)
   );
   try {

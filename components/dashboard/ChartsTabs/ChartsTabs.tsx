@@ -12,6 +12,7 @@ import React, { useState } from "react";
 import { UsersChartTab } from "./UsersChartTab";
 import { CommunitiesChartTab } from "./CommunitiesChartTab";
 import { v4 } from "uuid";
+import { MessagesChartTab } from "./MessagesChartTab";
 
 export const ChartsTabs = () => {
   const [tabIndex, setTabIndex] = useState(0);
@@ -27,6 +28,10 @@ export const ChartsTabs = () => {
     {
       panel: <CommunitiesChartTab />,
       title: "Comunidades",
+    },
+    {
+      panel: <MessagesChartTab />,
+      title: "Mensagens",
     },
   ];
   return (
