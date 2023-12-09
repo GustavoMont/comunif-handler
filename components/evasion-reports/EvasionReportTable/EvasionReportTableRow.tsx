@@ -14,6 +14,7 @@ import {
   Tr,
   VStack,
 } from "@chakra-ui/react";
+import { format, zonedTimeToUtc } from "date-fns-tz";
 import NextLink from "next/link";
 import React from "react";
 import { HiOutlineEye } from "react-icons/hi";
@@ -23,9 +24,13 @@ interface Props {
 }
 
 export const EvasionReportTableRow: React.FC<Props> = ({ report }) => {
-  const { user, community, removerId, remover } = report;
+  const { user, community, remover } = report;
   return (
-    <Tr transition={"ease-in-out 0.2s"} _hover={{ bgColor: "gray.200" }}>
+    <Tr
+      transition={"ease-in-out 0.2s"}
+      _hover={{ bgColor: "gray.200" }}
+      position={"relative"}
+    >
       <Td>
         <Link
           color="primary.500"
@@ -52,7 +57,12 @@ export const EvasionReportTableRow: React.FC<Props> = ({ report }) => {
           {community.name}
         </Link>
       </Td>
-      <Td>{removerId ? "Sim" : "Não"}</Td>
+      <Td>
+        {format(
+          zonedTimeToUtc(report.removedAt, "America/Sao_Paulo"),
+          "dd/MM/yyyy"
+        )}
+      </Td>
       <Td color={"secondary.500"}>
         {remover ? (
           <Link
@@ -87,8 +97,8 @@ export const EvasionReportTableRow: React.FC<Props> = ({ report }) => {
                   {user.name} {user.lastName}
                 </Heading>
               </PopoverHeader>
-              <PopoverBody py={"4"}>
-                <VStack spacing={"4"} alignItems={"start"}>
+              <PopoverBody py={"2"}>
+                <VStack spacing={"2"} alignItems={"start"}>
                   {remover ? (
                     <Text color={"secondary.600"} fontWeight={500}>
                       Segundo {remover.name}:{" "}
