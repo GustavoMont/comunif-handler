@@ -9,7 +9,13 @@ interface Props {
 }
 
 export const EvasionReportsTable: React.FC<Props> = ({ reports = [] }) => {
-  const headers = ["Usuário", "Comunidade", "Foi removido", "Removido Por"];
+  const headers = [
+    "Usuário",
+    "Comunidade",
+    "Foi removido",
+    "Removido Por",
+    "Motivo",
+  ];
 
   return (
     <TableContainer>

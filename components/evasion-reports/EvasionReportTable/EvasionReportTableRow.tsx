@@ -1,7 +1,22 @@
 import { EvasionReport } from "@/models/EvasionReports";
-import { Link, Td, Text, Tr } from "@chakra-ui/react";
+import {
+  Heading,
+  IconButton,
+  Link,
+  Popover,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Td,
+  Text,
+  Tr,
+  VStack,
+} from "@chakra-ui/react";
 import NextLink from "next/link";
 import React from "react";
+import { HiOutlineEye } from "react-icons/hi";
 
 interface Props {
   report: EvasionReport;
@@ -53,6 +68,39 @@ export const EvasionReportTableRow: React.FC<Props> = ({ report }) => {
           </Link>
         ) : (
           <Text>-</Text>
+        )}
+      </Td>
+      <Td>
+        {report.reason ? (
+          <Popover>
+            <PopoverTrigger>
+              <IconButton
+                color={"primary.700"}
+                aria-label="Ver motivo"
+                icon={<HiOutlineEye />}
+              />
+            </PopoverTrigger>
+            <PopoverContent>
+              <PopoverCloseButton />
+              <PopoverHeader>
+                <Heading as={"h5"} fontSize={"md"} color={"primary.500"}>
+                  {user.name} {user.lastName}
+                </Heading>
+              </PopoverHeader>
+              <PopoverBody py={"4"}>
+                <VStack spacing={"4"} alignItems={"start"}>
+                  {remover ? (
+                    <Text color={"secondary.600"} fontWeight={500}>
+                      Segundo {remover.name}:{" "}
+                    </Text>
+                  ) : null}
+                  <Text>{report.reason}</Text>
+                </VStack>
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
+        ) : (
+          "Não informado"
         )}
       </Td>
     </Tr>
