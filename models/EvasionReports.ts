@@ -10,4 +10,5 @@ export interface EvasionReport {
   removerId: number | null;
   remover: User | null;
   reason: string | null;
+  removedAt: string;
 }
