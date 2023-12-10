@@ -82,7 +82,7 @@ export const EvasionReportTableRow: React.FC<Props> = ({ report }) => {
       </Td>
       <Td>
         {report.reason ? (
-          <Popover>
+          <Popover placement="left-start">
             <PopoverTrigger>
               <IconButton
                 color={"primary.700"}
