@@ -27,6 +27,7 @@ import {
   IconButton,
   Input,
   ScaleFade,
+  Skeleton,
   Stack,
   Text,
   Textarea,
@@ -58,7 +59,7 @@ export default function Profile() {
 
   const userId = router.query.id ?? "0";
   const { user: currentUser, updateUser: updateAuthUser } = useAuth();
-  const { data: user } = useQuery(
+  const { data: user, isLoading } = useQuery(
     ["user", userId],
     () => getUser(Number(userId)),
     {
@@ -66,7 +67,7 @@ export default function Profile() {
     }
   );
   const [hasChanges, setHasChanges] = useState(false);
-  const { data: communities = [] } = useQuery(
+  const { data: communities = [], isLoading: isLoadingCommunities } = useQuery(
     ["user-communities", userId],
     () => listUserCommunities(+userId)
   );
@@ -77,7 +78,7 @@ export default function Profile() {
   const queryClient = useQueryClient();
   const isUserProfile = user?.id === currentUser?.id;
   const currentUserIsAdmin = currentUser?.role === RoleEnum.admin;
-  const filter = user?.isActive ? undefined : "grayscale(0.8)";
+  const filter = !user || user?.isActive ? undefined : "grayscale(0.8)";
   const breadCrumbItems: BreadCrumbLink[] = [
     {
       href: "/usuarios",
@@ -87,6 +88,7 @@ export default function Profile() {
       href: `/usuarios/${user?.id}`,
       name: user?.name ?? "Usuário",
       isCurrentPage: true,
+      isLoading,
     },
   ];
 
@@ -189,132 +191,142 @@ export default function Profile() {
             justifyItems={["center", null, "start"]}
             templateColumns={["repeat(1, 1fr)", null, "180px repeat(1, 1fr)"]}
           >
-            <GridItem filter={filter} alignSelf={["center", null, "start"]}>
-              <Avatar size="2xl" src={handleAvatarPicture() ?? ""}>
-                <ScaleFade initialScale={0.1} in={isEditing}>
-                  <AvatarBadge boxSize={"3rem"}>
-                    <IconButton
-                      as={"label"}
-                      htmlFor="avatar"
-                      cursor={"pointer"}
-                      aria-label="editar avatar"
-                      colorScheme="secondary"
-                      rounded={"full"}
-                      icon={<HiCamera />}
-                    />
-                  </AvatarBadge>
-                </ScaleFade>
-              </Avatar>
-              {isEditing ? (
-                <Input srOnly id="avatar" type="file" {...register("avatar")} />
-              ) : null}
-            </GridItem>
-            <GridItem colStart={[1, null, 2]} w={[null, null, "auto"]}>
-              <Stack position={"relative"}>
-                <Box filter={filter}>
-                  <EditableText
-                    input={
-                      <HStack spacing={4}>
-                        <TextInput
-                          colorScheme="primary"
-                          variant={"flushed"}
-                          register={register("name")}
-                        />
-                        <TextInput
-                          colorScheme="primary"
-                          variant={"flushed"}
-                          register={register("lastName")}
-                        />
-                      </HStack>
-                    }
-                    isEditing={isEditing}
-                    text={
-                      <Heading
-                        textAlign={["center", null, "start"]}
-                        color={"primary.500"}
-                        as={"h2"}
-                      >
-                        {`${user?.name} ${user?.lastName}`}
-                      </Heading>
-                    }
-                  />
-                  {!isEditing ? (
-                    <RoleLabel
-                      position={"absolute"}
-                      top={"8"}
-                      right={"-2"}
-                      alignSelf={"self-start"}
-                      role={user?.role}
-                    />
-                  ) : null}
-                  <EditableText
-                    input={
-                      <TextInput
+            <Skeleton isLoaded={!isLoading} rounded={"full"}>
+              <GridItem filter={filter} alignSelf={["center", null, "start"]}>
+                <Avatar size="2xl" src={handleAvatarPicture() ?? ""}>
+                  <ScaleFade initialScale={0.1} in={isEditing}>
+                    <AvatarBadge boxSize={"3rem"}>
+                      <IconButton
+                        as={"label"}
+                        htmlFor="avatar"
+                        cursor={"pointer"}
+                        aria-label="editar avatar"
                         colorScheme="secondary"
-                        variant={"flushed"}
-                        register={register("username")}
+                        rounded={"full"}
+                        icon={<HiCamera />}
                       />
-                    }
-                    text={
-                      <Text
-                        textAlign={["center", null, "start"]}
-                        color={"secondary.500"}
-                        as={"p"}
-                        fontSize={"large"}
-                      >
-                        @{user?.username}
-                      </Text>
-                    }
-                    isEditing={isEditing}
+                    </AvatarBadge>
+                  </ScaleFade>
+                </Avatar>
+                {isEditing ? (
+                  <Input
+                    srOnly
+                    id="avatar"
+                    type="file"
+                    {...register("avatar")}
                   />
-                </Box>
-                <Flex
-                  wrap={["wrap", null, "nowrap"]}
-                  w={["full", null, "min"]}
-                  justifyContent={"center"}
-                  gap={5}
-                >
-                  {isUserProfile ? (
-                    <>
-                      {isEditing ? (
-                        <Button
-                          leftIcon={<HiX />}
+                ) : null}
+              </GridItem>
+            </Skeleton>
+            <Skeleton isLoaded={!isLoading}>
+              <GridItem colStart={[1, null, 2]} w={[null, null, "auto"]}>
+                <Stack position={"relative"}>
+                  <Box filter={filter}>
+                    <EditableText
+                      input={
+                        <HStack spacing={4}>
+                          <TextInput
+                            colorScheme="primary"
+                            variant={"flushed"}
+                            register={register("name")}
+                          />
+                          <TextInput
+                            colorScheme="primary"
+                            variant={"flushed"}
+                            register={register("lastName")}
+                          />
+                        </HStack>
+                      }
+                      isEditing={isEditing}
+                      text={
+                        <Heading
+                          textAlign={["center", null, "start"]}
+                          color={"primary.500"}
+                          as={"h2"}
+                        >
+                          {`${user?.name} ${user?.lastName}`}
+                        </Heading>
+                      }
+                    />
+                    {!isEditing ? (
+                      <RoleLabel
+                        position={"absolute"}
+                        top={"8"}
+                        right={"-2"}
+                        alignSelf={"self-start"}
+                        role={user?.role}
+                      />
+                    ) : null}
+                    <EditableText
+                      input={
+                        <TextInput
                           colorScheme="secondary"
-                          onClick={onCancel}
+                          variant={"flushed"}
+                          register={register("username")}
+                        />
+                      }
+                      text={
+                        <Text
+                          textAlign={["center", null, "start"]}
+                          color={"secondary.500"}
+                          as={"p"}
+                          fontSize={"large"}
                         >
-                          Cancelar
-                        </Button>
-                      ) : null}
+                          @{user?.username}
+                        </Text>
+                      }
+                      isEditing={isEditing}
+                    />
+                  </Box>
+                  <Flex
+                    wrap={["wrap", null, "nowrap"]}
+                    w={["full", null, "min"]}
+                    justifyContent={"center"}
+                    gap={5}
+                  >
+                    {isUserProfile ? (
+                      <>
+                        {isEditing ? (
+                          <Button
+                            leftIcon={<HiX />}
+                            colorScheme="secondary"
+                            onClick={onCancel}
+                          >
+                            Cancelar
+                          </Button>
+                        ) : null}
 
-                      {isEditing ? (
-                        <Button
-                          leftIcon={<HiPencil />}
-                          colorScheme="primary"
-                          type="submit"
-                          isDisabled={!hasChanges}
-                          isLoading={isUpdating}
-                        >
-                          Atualizar Perfil
-                        </Button>
-                      ) : (
-                        <Button
-                          leftIcon={<HiPencil />}
-                          colorScheme="primary"
-                          onClick={onOpen}
-                          isDisabled={isEditing && !hasChanges}
-                          isLoading={isUpdating}
-                        >
-                          Editar Perfil
-                        </Button>
-                      )}
-                    </>
-                  ) : null}
-                  {currentUserIsAdmin ? (
-                    <ActivateButtonControl user={user} />
-                  ) : null}
-                </Flex>
-              </Stack>
-            </GridItem>
+                        {isEditing ? (
+                          <Button
+                            leftIcon={<HiPencil />}
+                            colorScheme="primary"
+                            type="submit"
+                            isDisabled={!hasChanges}
+                            isLoading={isUpdating}
+                          >
+                            Atualizar Perfil
+                          </Button>
+                        ) : (
+                          <Button
+                            leftIcon={<HiPencil />}
+                            colorScheme="primary"
+                            onClick={onOpen}
+                            isDisabled={isEditing && !hasChanges}
+                            isLoading={isUpdating}
+                          >
+                            Editar Perfil
+                          </Button>
+                        )}
+                      </>
+                    ) : null}
+                    {currentUserIsAdmin ? (
+                      <ActivateButtonControl user={user} />
+                    ) : null}
+                  </Flex>
+                </Stack>
+              </GridItem>
+            </Skeleton>
+
             <GridItem w={"full"} colStart={1} colEnd={3}>
               <Divider borderColor={"primary.500"} />
             </GridItem>
@@ -332,25 +344,30 @@ export default function Profile() {
                 <Heading color={"primary.400"} as={"h4"}>
                   Bio
                 </Heading>
-                <EditableText
-                  input={
-                    <Textarea
-                      borderColor={"primary.400"}
-                      focusBorderColor="primary.500"
-                      {...register("bio")}
-                    />
-                  }
-                  isEditing={isEditing}
-                  text={
-                    <Text color={"lightBlack"}>
-                      {user?.bio ?? "usuário sem bio"}
-                    </Text>
-                  }
-                />
+                <Skeleton isLoaded={!isLoading}>
+                  <EditableText
+                    input={
+                      <Textarea
+                        borderColor={"primary.400"}
+                        focusBorderColor="primary.500"
+                        {...register("bio")}
+                      />
+                    }
+                    isEditing={isEditing}
+                    text={
+                      <Text color={"lightBlack"}>
+                        {user?.bio ?? "usuário sem bio"}
+                      </Text>
+                    }
+                  />
+                </Skeleton>
               </Stack>
               <Stack maxW={"2xl"} w={"full"}>
                 <Heading color={"primary.400"}>Comunidades</Heading>
-                <CommunitiesCarroulsel communities={communities} />
+                <CommunitiesCarroulsel
+                  isLoading={isLoadingCommunities}
+                  communities={communities}
+                />
               </Stack>
             </GridItem>
           </Grid>
@@ -364,7 +381,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   try {
     const userId = ctx.params?.id ?? "0";
     const queryClient = new QueryClient();
-    await Promise.all([
+    Promise.all([
       queryClient.prefetchQuery(["user", userId], () =>
         getUser(Number(userId), ctx)
       ),

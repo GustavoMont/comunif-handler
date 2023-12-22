@@ -2,6 +2,7 @@ import {
   HStack,
   IconButton,
   IconButtonProps,
+  Skeleton,
   StackProps,
   Text,
 } from "@chakra-ui/react";
@@ -12,6 +13,7 @@ interface Props extends StackProps {
   pages: number;
   onNext(): void;
   onPrevious(): void;
+  isLoading?: boolean;
 }
 
 export const Pagination: React.FC<Props> = ({
@@ -19,6 +21,7 @@ export const Pagination: React.FC<Props> = ({
   pages,
   onNext,
   onPrevious,
+  isLoading,
   ...props
 }) => {
   const iconSize = 20;
@@ -26,6 +29,10 @@ export const Pagination: React.FC<Props> = ({
     variant: "ghost",
     colorScheme: "secondary",
   } as IconButtonProps;
+
+  if (isLoading) {
+    return <Skeleton {...props} height={"4"} w={"40"} rounded={"full"} />;
+  }
 
   return (
     <HStack {...props} spacing={5}>

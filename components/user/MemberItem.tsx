@@ -2,6 +2,7 @@ import { Community } from "@/models/Community";
 import { User } from "@/models/User";
 import {
   Avatar,
+  Box,
   Button,
   Flex,
   Heading,
@@ -22,11 +23,19 @@ import { BanUserModal } from "../management/BanUserModal";
 
 interface Props {
   user: User;
-  community: Community;
+  community?: Community;
 }
 
 export const MemberItem: React.FC<Props> = ({ user, community }) => {
   const [open, setOpen] = useBoolean();
+
+  if (!community) {
+    return (
+      <Box>
+        <Text>Não foi possível encontrar as informações necessárias</Text>
+      </Box>
+    );
+  }
 
   return (
     <>

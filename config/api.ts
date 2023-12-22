@@ -52,6 +52,8 @@ const onRequestFail = async (err: AxiosError) => {
   return Promise.reject(err);
 };
 
-api.interceptors.response.use((config) => config, onRequestFail);
+api.interceptors.response.use(async (config) => {
+  return config;
+}, onRequestFail);
 
 export default api;
