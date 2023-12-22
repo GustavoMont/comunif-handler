@@ -18,37 +18,41 @@ export const CommunitiesChartTab = () => {
     "primary.500",
     "secondary.50",
   ]);
-  const { data: statisticsResponse } = useQuery(["community-statistics"], () =>
-    listCommunityStatistics()
+  const { data: statisticsResponse, isLoading } = useQuery(
+    ["community-statistics"],
+    () => listCommunityStatistics()
   );
   const { toastError, toastSuccess } = useAppToast();
   const queryClient = useQueryClient();
-  const { mutate, isLoading } = useMutation(createCommunityStatistics, {
-    onSuccess(data) {
-      toastSuccess({
-        title: "Estatísticas geradas com sucesso",
-      });
-      queryClient.setQueryData<ListResponse<CommunityStatistics>>(
-        ["community-statistics"],
-        (old) => {
-          if (!old) {
-            return old;
+  const { mutate, isLoading: isGenerating } = useMutation(
+    createCommunityStatistics,
+    {
+      onSuccess(data) {
+        toastSuccess({
+          title: "Estatísticas geradas com sucesso",
+        });
+        queryClient.setQueryData<ListResponse<CommunityStatistics>>(
+          ["community-statistics"],
+          (old) => {
+            if (!old) {
+              return old;
+            }
+            return {
+              meta: old.meta,
+              results: [...old.results, data],
+            };
           }
-          return {
-            meta: old.meta,
-            results: [...old.results, data],
-          };
-        }
-      );
-    },
-    onError(error) {
-      const apiError = new ApiErrorHandler(error);
-      toastError({
-        title: apiError.title,
-        message: apiError.message,
-      });
-    },
-  });
+        );
+      },
+      onError(error) {
+        const apiError = new ApiErrorHandler(error);
+        toastError({
+          title: apiError.title,
+          message: apiError.message,
+        });
+      },
+    }
+  );
 
   const statistics = statisticsResponse?.results ?? [];
 
@@ -57,8 +61,9 @@ export const CommunitiesChartTab = () => {
   return (
     <ChartPanelContainer
       generateNewStats={mutate}
-      isGenerating={isLoading}
+      isGenerating={isGenerating}
       title="Comunidades"
+      isLoading={isLoading}
     >
       <Box>
         <LineChart barGap={4} width={500} height={300} data={chartStatistics}>

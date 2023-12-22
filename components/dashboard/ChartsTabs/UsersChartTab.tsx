@@ -19,8 +19,9 @@ export const UsersChartTab = () => {
     "secondary.50",
   ]);
   const { toastError, toastSuccess } = useAppToast();
-  const { data: statisticsResponse } = useQuery(["user-statistics"], () =>
-    listUserStatistics()
+  const { data: statisticsResponse, isLoading } = useQuery(
+    ["user-statistics"],
+    () => listUserStatistics()
   );
   const queryClient = useQueryClient();
 
@@ -28,37 +29,41 @@ export const UsersChartTab = () => {
 
   const chartStatistics = statistics.map(statisticToChartStatistic);
 
-  const { mutate, isLoading } = useMutation(createUserStatistics, {
-    onSuccess(data) {
-      toastSuccess({
-        title: "Estatísticas geradas com sucesso",
-      });
-      queryClient.setQueryData<ListResponse<UserStatistics>>(
-        ["user-statistics"],
-        (old) => {
-          if (!old) {
-            return old;
+  const { mutate, isLoading: isGenerating } = useMutation(
+    createUserStatistics,
+    {
+      onSuccess(data) {
+        toastSuccess({
+          title: "Estatísticas geradas com sucesso",
+        });
+        queryClient.setQueryData<ListResponse<UserStatistics>>(
+          ["user-statistics"],
+          (old) => {
+            if (!old) {
+              return old;
+            }
+            return {
+              meta: old.meta,
+              results: [...old.results, data],
+            };
           }
-          return {
-            meta: old.meta,
-            results: [...old.results, data],
-          };
-        }
-      );
-    },
-    onError(error) {
-      const apiError = new ApiErrorHandler(error);
-      toastError({
-        title: apiError.title,
-        message: apiError.message,
-      });
-    },
-  });
+        );
+      },
+      onError(error) {
+        const apiError = new ApiErrorHandler(error);
+        toastError({
+          title: apiError.title,
+          message: apiError.message,
+        });
+      },
+    }
+  );
 
   return (
     <ChartPanelContainer
       generateNewStats={mutate}
-      isGenerating={isLoading}
+      isGenerating={isGenerating}
+      isLoading={isLoading}
       title="Usuários"
     >
       <Box>

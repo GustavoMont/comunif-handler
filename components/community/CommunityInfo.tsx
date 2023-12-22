@@ -8,6 +8,8 @@ import {
   Heading,
   IconButton,
   Image,
+  Skeleton,
+  Stack,
   Text,
   VStack,
   useDisclosure,
@@ -21,20 +23,29 @@ import { EditCommunityModal } from "./EditCommunityModal";
 import { ListResponse } from "@/models/Api";
 import { MembersList } from "../user/MembersList";
 import { DeleteCommunityModal } from "./DeleteCommunityModal";
+import { v4 } from "uuid";
+
+type MembersInfo = {
+  members?: ListResponse<User>;
+  isLoading?: boolean;
+};
 
 interface CommunityInfoProps {
   community?: Community;
+  isLoading?: boolean;
   onSelectChannel(channel: CommunityChannel): void;
   onGetMessages(messages: Message[]): void;
-  members?: ListResponse<User>;
+  membersInfo: MembersInfo;
 }
 
 export const CommunityInfo: React.FC<CommunityInfoProps> = ({
   community,
+  isLoading,
   onSelectChannel,
   onGetMessages,
-  members,
+  membersInfo,
 }) => {
+  const { isLoading: isLoadingMembers, members } = membersInfo;
   const {
     isOpen: isOpenEditing,
     onOpen: onOpenEditing,
@@ -74,22 +85,26 @@ export const CommunityInfo: React.FC<CommunityInfoProps> = ({
         </>
       ) : null}
 
-      <Box>
-        <Image
-          alignSelf={"flex-start"}
-          src={community?.banner ?? ""}
-          alt={`Comunidade ${community?.name}`}
-          fallbackSrc="https://via.placeholder.com/150"
-          boxSize={"sm"}
-          objectFit={"contain"}
-          borderRadius="lg"
-        />
-      </Box>
+      <Skeleton isLoaded={!isLoading}>
+        <Box>
+          <Image
+            alignSelf={"flex-start"}
+            src={community?.banner ?? ""}
+            alt={`Comunidade ${community?.name}`}
+            fallbackSrc="https://via.placeholder.com/150"
+            boxSize={"sm"}
+            objectFit={"contain"}
+            borderRadius="lg"
+          />
+        </Box>
+      </Skeleton>
       <VStack flex={1} alignItems={"start"}>
         <HStack>
-          <Heading as={"h2"} color={"primary.500"}>
-            {community?.name}
-          </Heading>
+          <Skeleton isLoaded={!isLoading}>
+            <Heading as={"h2"} color={"primary.500"}>
+              {community?.name ?? "comunidade"}
+            </Heading>
+          </Skeleton>
           <IconButton
             onClick={onOpenEditing}
             color={"primary.400"}
@@ -103,39 +118,60 @@ export const CommunityInfo: React.FC<CommunityInfoProps> = ({
             icon={<HiTrash />}
           />
         </HStack>
-        <Text color={isActive ? "primary.700" : "red.500"}>
-          Comunidade {isActive ? "" : "não"} ativa
-        </Text>
+        <Skeleton isLoaded={!isLoading}>
+          <Text color={isActive ? "primary.700" : "red.500"}>
+            Comunidade {isActive ? "" : "não"} ativa
+          </Text>
+        </Skeleton>
         <Divider borderColor={"primary.300"} />
         <VStack alignItems={"start"}>
           <Heading as={"h4"} fontSize={"lg"} color={"secondary.400"}>
             Canais de comunicação
           </Heading>
-          {channels && (
+          {isLoading ? (
+            <Stack spacing={"4"}>
+              {Array.from({ length: 4 }).map(() => (
+                <Skeleton h={"2"} w={"32"} rounded={"full"} key={v4()} />
+              ))}
+            </Stack>
+          ) : (
             <LinksList
               name={"name"}
               keyName="id"
-              source={channels.map(({ channelType }) => channelType)}
-              hrefs={channels.map((channel) => ({
-                onClick() {
-                  connectChannel(channel);
-                },
-              }))}
+              source={channels?.map(({ channelType }) => channelType) ?? []}
+              hrefs={
+                channels?.map((channel) => ({
+                  onClick() {
+                    connectChannel(channel);
+                  },
+                })) ?? []
+              }
             />
           )}
 
           <Text color={"secondary.300"}>
-            Total de <strong>{channelsLength}</strong>{" "}
+            Total de{" "}
+            {isLoadingMembers ? (
+              <Skeleton
+                w={"4"}
+                h={"4"}
+                rounded={"full"}
+                as={"span"}
+                display={"inline-block"}
+              />
+            ) : (
+              <strong>{channelsLength}</strong>
+            )}{" "}
             {channelsLength === 1 ? "Canal" : "Canais"} de comunicação
           </Text>
           <Divider borderColor={"primary.300"} w={"full"} />
-          {community ? (
-            <MembersList
-              community={community}
-              members={members?.results}
-              total={members?.meta.total}
-            />
-          ) : null}
+
+          <MembersList
+            isLoading={isLoadingMembers}
+            community={community}
+            members={members?.results}
+            total={members?.meta.total}
+          />
         </VStack>
       </VStack>
     </>

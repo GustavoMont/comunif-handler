@@ -1,6 +1,6 @@
 import React from "react";
 import { ChartPanelContainer } from "./ChartPanelContainer";
-import { Box, Spinner, useToken } from "@chakra-ui/react";
+import { Box, useToken } from "@chakra-ui/react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -63,9 +63,9 @@ export const MessagesChartTab = () => {
     <ChartPanelContainer
       generateNewStats={mutate}
       isGenerating={isCreating}
+      isLoading={isLoading}
       title="Mensagens"
     >
-      {isLoading ? <Spinner color="primary.500" /> : null}
       <Box>
         <LineChart barGap={4} width={500} height={300} data={chartStatistics}>
           <XAxis dataKey="month" />

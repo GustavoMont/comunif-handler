@@ -11,8 +11,9 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { useEffect } from "react";
 
 interface Props {
   user?: User;
@@ -22,12 +23,19 @@ interface Props {
 export const UserCard: React.FC<Props> = ({ user, isLoading }) => {
   const { data: communities, isInitialLoading: isLoadingCommunities } =
     useQuery(
-      ["user-communities", user?.id],
+      ["user-communities", user?.id.toString()],
       () => listUserCommunities(user?.id ?? 0),
       {
         enabled: !!user?.id,
       }
     );
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    if (user) {
+      queryClient.setQueryData(["user", user.id.toString()], user);
+    }
+  }, [queryClient, user]);
+
   return (
     <Skeleton isLoaded={!isLoading}>
       <Center
@@ -51,11 +59,11 @@ export const UserCard: React.FC<Props> = ({ user, isLoading }) => {
             h={"240px"}
             alignSelf={{ base: "stretch", md: "center" }}
             bg="secondary.200"
+            overflow={"hidden"}
           >
             <Image
               textAlign={"center"}
               display={"flex"}
-              borderRadius={"3xl"}
               objectFit="cover"
               boxSize="100%"
               src={user?.avatar ?? ""}

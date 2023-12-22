@@ -11,6 +11,7 @@ import {
   Radio,
   RadioGroup,
   SimpleGrid,
+  Skeleton,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -18,6 +19,7 @@ import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
 import { GetServerSideProps } from "next";
 import Head from "next/head";
 import React, { useState } from "react";
+import { v4 } from "uuid";
 
 const defaultFilters: ListUserFilters = {
   page: 1,
@@ -80,7 +82,7 @@ export default function Usuarios() {
             colorScheme="primary"
           >
             <HStack>
-              <Radio value="all">Todas</Radio>
+              <Radio value="all">Todos</Radio>
               <Radio value="active">Ativos</Radio>
               <Radio value="deactive">Inativos</Radio>
             </HStack>
@@ -92,13 +94,24 @@ export default function Usuarios() {
           alignSelf={"center"}
           currentPage={filters?.page || 1}
           pages={meta?.pages || 0}
+          isLoading={isLoading}
         />
 
         <Text color="primary.500">
           Total de{" "}
-          <Text as={"span"} fontWeight={"bold"}>
-            {meta?.total ?? 0}
-          </Text>{" "}
+          {isLoading ? (
+            <Skeleton
+              as={"span"}
+              display={"inline-block"}
+              height={"3"}
+              w={"3"}
+              rounded={"full"}
+            />
+          ) : (
+            <Text as={"span"} fontWeight={"bold"}>
+              {meta?.total ?? 0}
+            </Text>
+          )}{" "}
           usuários
         </Text>
         <SimpleGrid
@@ -107,11 +120,15 @@ export default function Usuarios() {
           style={{ listStyle: "none" }}
           as={"ul"}
         >
-          {users.map((user) => (
-            <li key={user.id}>
-              <UserCard isLoading={isLoading} user={user} />
-            </li>
-          ))}
+          {isLoading && !users.length
+            ? Array.from({ length: 6 }).map(() => (
+                <Skeleton height={"72"} isLoaded={false} key={v4()} />
+              ))
+            : users.map((user) => (
+                <li key={user.id}>
+                  <UserCard isLoading={isLoading} user={user} />
+                </li>
+              ))}
         </SimpleGrid>
       </Stack>
     </>

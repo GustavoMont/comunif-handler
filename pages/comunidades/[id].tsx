@@ -22,7 +22,7 @@ import {
 import { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 interface Props {
   dehydratedState?: DehydratedState;
@@ -36,8 +36,9 @@ const Comunidade: NextPage<Props> = () => {
   const showChat = !!selectedChannel;
   const [messages, setMessages] = useState<Message[]>([]);
   const communityId = router.query.id;
-  const { data: community } = useQuery(["community", communityId], () =>
-    getCommunity(Number(communityId))
+  const { data: community, isLoading } = useQuery(
+    ["community", communityId],
+    () => getCommunity(Number(communityId))
   );
   const { data, fetchNextPage } = useInfiniteQuery({
     queryKey: ["messages", selectedChannel?.id],
@@ -48,12 +49,19 @@ const Comunidade: NextPage<Props> = () => {
     },
     enabled: !!selectedChannel?.id,
   });
-  const oldMessages = data?.pages.flatMap((page) => page.results) ?? [];
-
-  const { data: membersResponse } = useQuery(
+  const { data: membersResponse, isLoading: isLoadingMembers } = useQuery(
     ["community-members", Number(communityId)],
     () => listCommunityMembers(Number(communityId))
   );
+
+  const chatMessages = useMemo(() => {
+    const oldMessages = data?.pages.flatMap((page) => page.results) ?? [];
+    const filtredMessages = messages?.filter(
+      (message) =>
+        !oldMessages.some((oldMessage) => message.id === oldMessage.id)
+    );
+    return filtredMessages.concat(oldMessages) ?? [];
+  }, [data?.pages, messages]);
 
   useEffect(() => {
     const onMessage = (message: Message) => {
@@ -76,6 +84,7 @@ const Comunidade: NextPage<Props> = () => {
       href: `/comunidades/${community?.id}`,
       name: community?.name ?? "Comunidade",
       isCurrentPage: true,
+      isLoading,
     },
   ];
   return (
@@ -97,7 +106,11 @@ const Comunidade: NextPage<Props> = () => {
             gap={5}
           >
             <CommunityInfo
-              members={membersResponse}
+              isLoading={isLoading}
+              membersInfo={{
+                isLoading: isLoadingMembers,
+                members: membersResponse,
+              }}
               onGetMessages={(messages) => setMessages(messages)}
               onSelectChannel={(channel) => setSelectedChannel(channel)}
               community={community}
@@ -126,16 +139,7 @@ const Comunidade: NextPage<Props> = () => {
                       socket.disconnect();
                       setSelectedChannel(null);
                     }}
-                    messages={
-                      messages
-                        ?.filter(
-                          (message) =>
-                            !oldMessages.some(
-                              (oldMessage) => message.id === oldMessage.id
-                            )
-                        )
-                        .concat(oldMessages) ?? []
-                    }
+                    messages={chatMessages}
                     isLoadingMoreMessages={false}
                     onReachTop={() => fetchNextPage()}
                   />
@@ -155,7 +159,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (ctx) => {
   try {
     const communityId = ctx.params?.id ?? "0";
     const queryClient = new QueryClient();
-    await Promise.all([
+    Promise.all([
       queryClient.prefetchQuery(["community", communityId], () =>
         getCommunity(Number(communityId), ctx)
       ),

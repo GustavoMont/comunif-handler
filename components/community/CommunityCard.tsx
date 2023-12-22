@@ -20,7 +20,7 @@ import {
 } from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import React, { PropsWithChildren, useState } from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FiX, FiCheck } from "react-icons/fi";
 interface Props {
@@ -97,6 +97,15 @@ const CommunityCard: React.FC<PropsWithChildren<Props>> = ({ community }) => {
       </HStack>
     );
   }
+
+  useEffect(() => {
+    if (community) {
+      queryClient.setQueryData(
+        ["community", community.id.toString()],
+        community
+      );
+    }
+  }, [community, queryClient]);
 
   return (
     <Skeleton isLoaded={!isLoading}>

@@ -1,4 +1,9 @@
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  Skeleton,
+} from "@chakra-ui/react";
 import Link from "next/link";
 import React from "react";
 import { v4 } from "uuid";
@@ -7,6 +12,7 @@ export interface BreadCrumbLink {
   name: string;
   href: string;
   isCurrentPage?: boolean;
+  isLoading?: boolean;
 }
 
 interface Props {
@@ -29,16 +35,12 @@ export const BreadCrumb: React.FC<Props> = ({ links }) => {
             as={Link}
             href={link.href}
           >
-            {link.name}
+            <Skeleton isLoaded={!link.isLoading}>
+              {link.name ?? "link"}
+            </Skeleton>
           </BreadcrumbLink>
         </BreadcrumbItem>
       ))}
-
-      {/* <BreadcrumbItem color={"secondary.500"} isCurrentPage>
-        <Link passHref href="">
-          <BreadcrumbLink as={"p"}>{community?.name}</BreadcrumbLink>
-        </Link>
-      </BreadcrumbItem> */}
     </Breadcrumb>
   );
 };
